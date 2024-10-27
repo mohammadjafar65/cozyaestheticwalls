@@ -17,7 +17,7 @@ const Dashboard = () => {
   // Fetch wallpapers from the API
   useEffect(() => {
     axios
-      .get(`${process.env.REACT_APP_API_URL}api/wallpapers`)
+      .get(`${process.env.REACT_APP_API_URL}/api/wallpapers`)
       .then((response) => {
         setWallpapers(response.data);
         setLoading(false);
@@ -35,7 +35,7 @@ const Dashboard = () => {
     );
     if (confirmDelete) {
       try {
-        await axios.delete(`${process.env.REACT_APP_API_URL}api/wallpapers/${id}`);
+        await axios.delete(`${process.env.REACT_APP_API_URL}/api/wallpapers/${id}`);
         // Update the wallpapers state after deletion
         setWallpapers(wallpapers.filter((wallpaper) => wallpaper.id !== id));
 

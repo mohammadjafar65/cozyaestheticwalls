@@ -4,7 +4,7 @@ const path = require("path");
 const cors = require("cors");
 const mysql = require("mysql2");
 const app = express();
-const PORT = 3000;
+const PORT = 3002;
 
 // Create a connection to the MySQL database
 const connection = mysql.createConnection({

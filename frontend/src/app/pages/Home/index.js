@@ -36,7 +36,7 @@ const HomePage = () => {
 
   useEffect(() => {
     axios
-      .get(`${process.env.REACT_APP_API_URL}api/wallpapers`)
+      .get(`${process.env.REACT_APP_API_URL}/api/wallpapers`)
       .then((response) => {
         setWallpapers(response.data);
         setLoading(false); // Stop loading when data is fetched
