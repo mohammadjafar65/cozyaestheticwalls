@@ -36,7 +36,7 @@ const HomePage = () => {
 
   useEffect(() => {
     axios
-      .get("https://www.cozyaestheticwallpaper.com/dashboard/api/wallpapers")
+      .get("https://www.cozyaestheticwallpaper.com/admin/api/wallpapers")
       .then((response) => {
         setWallpapers(response.data);
         setLoading(false); // Stop loading when data is fetched
@@ -74,7 +74,7 @@ const HomePage = () => {
                 key={wallpaper._id} // Use unique id for the key
               >
                 <img
-                  src={`https://www.cozyaestheticwallpaper.com/dashboard${wallpaper.url}`}
+                  src={`https://www.cozyaestheticwallpaper.com/admin${wallpaper.url}`}
                   className="object-cover w-[250px] h-[350px] rounded-[10px] transition-transform duration-500 ease-in-out transform group-hover:scale-105"
                   alt={wallpaper.title}
                   loading="lazy"
@@ -98,7 +98,7 @@ const HomePage = () => {
                     className="bg-white rounded-full text-black px-4 py-2 transition-transform duration-500 ease-in-out transform group-hover:scale-110 hover:bg-white/[90%]"
                     onClick={() =>
                       downloadImage(
-                        `https://www.cozyaestheticwallpaper.com/dashboard${wallpaper.url}`,
+                        `https://www.cozyaestheticwallpaper.com/admin${wallpaper.url}`,
                         wallpaper.title
                       )
                     }

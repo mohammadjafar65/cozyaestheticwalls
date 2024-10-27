@@ -17,7 +17,7 @@ const Dashboard = () => {
   // Fetch wallpapers from the API
   useEffect(() => {
     axios
-      .get("https://www.cozyaestheticwallpaper.com/dashboard/api/wallpapers")
+      .get("https://www.cozyaestheticwallpaper.com/admin/api/wallpapers")
       .then((response) => {
         setWallpapers(response.data);
         setLoading(false);
@@ -35,7 +35,7 @@ const Dashboard = () => {
     );
     if (confirmDelete) {
       try {
-        await axios.delete(`https://www.cozyaestheticwallpaper.com/dashboard/api/wallpapers/${id}`);
+        await axios.delete(`https://www.cozyaestheticwallpaper.com/admin/api/wallpapers/${id}`);
         // Update the wallpapers state after deletion
         setWallpapers(wallpapers.filter((wallpaper) => wallpaper.id !== id));
 
@@ -76,7 +76,7 @@ const Dashboard = () => {
                 <TableCell>{wallpaper.description}</TableCell>
                 <TableCell>
                   <img
-                    src={`https://www.cozyaestheticwallpaper.com/dashboard${wallpaper.url}`}
+                    src={`https://www.cozyaestheticwallpaper.com/admin${wallpaper.url}`}
                     alt="Wallpaper"
                     className="w-[75px] h-[75px] object-cover rounded"
                   />
