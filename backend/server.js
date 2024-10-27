@@ -9,9 +9,9 @@ const PORT = 5000;
 // Create a connection to the MySQL database
 const connection = mysql.createConnection({
   host: "localhost",
-  user: "root", // use your MySQL root user or any other MySQL user you created
-  password: "", // use your MySQL password
-  database: "wallpapersdb", // name of your MySQL database
+  user: "webifzwu_cozywallpaper", // use your MySQL root user or any other MySQL user you created
+  password: "cozywallpaper12@", // use your MySQL password
+  database: "webifzwu_wallpapersdb", // name of your MySQL database
 });
 
 // Connect to MySQL
