@@ -24,9 +24,23 @@ connection.connect((err) => {
 });
 
 // Middleware
-app.use(cors()); // Enable CORS for all routes
+// app.use(cors()); // Enable CORS for all routes
+const cors = require("cors");
+app.use(
+  cors({
+    origin: "http://cozyaestheticwallpaper.com", // Your frontend domain
+  })
+);
 app.use(express.json()); // For parsing application/json
 app.use("/uploads", express.static("uploads")); // Serve static files from the "uploads" folder
+
+// Serve the static files from the React app
+app.use(express.static(path.join(__dirname, "client/build")));
+
+// Handles any requests that don't match the ones above (fallback to React)
+app.get("*", (req, res) => {
+  res.sendFile(path.join(__dirname + "/client/build/index.html"));
+});
 
 // Multer storage configuration
 const storage = multer.diskStorage({
