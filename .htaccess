@@ -12,7 +12,7 @@
 
     # Rewrite rule for the admin project (Admin domain)
     RewriteCond %{HTTP_HOST} ^cozyaestheticwallpaper\.com$ [NC]
-    RewriteCond %{REQUEST_URI} ^/dashboard [NC]
+    RewriteCond %{REQUEST_URI} ^/admin [NC]
     RewriteCond %{REQUEST_URI} !^/backend/
     RewriteRule ^(.*)$ /backend/$1 [L]
 
