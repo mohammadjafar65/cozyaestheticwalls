@@ -4,7 +4,7 @@ const path = require("path");
 const cors = require("cors");
 const mysql = require("mysql2");
 const app = express();
-const PORT = 3002;
+const PORT = 3000;
 
 // Create a connection to the MySQL database
 const connection = mysql.createConnection({
@@ -33,14 +33,6 @@ app.use(
 );
 app.use(express.json()); // For parsing application/json
 app.use("/uploads", express.static("uploads")); // Serve static files from the "uploads" folder
-
-// Serve the static files from the React app
-app.use(express.static(path.join(__dirname, "client/build")));
-
-// Handles any requests that don't match the ones above (fallback to React)
-app.get("*", (req, res) => {
-  res.sendFile(path.join(__dirname + "/client/build/index.html"));
-});
 
 // Multer storage configuration
 const storage = multer.diskStorage({
@@ -110,6 +102,12 @@ app.delete("/api/wallpapers/:id", (req, res) => {
       res.status(404).json({ error: "Wallpaper not found" });
     }
   });
+});
+
+// Middleware to handle errors globally
+app.use((err, req, res, next) => {
+  console.error(err.stack);
+  res.status(500).send('Something went wrong!');
 });
 
 // Start the server
