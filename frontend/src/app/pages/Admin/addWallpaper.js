@@ -30,7 +30,7 @@ const AddWallpaper = () => {
     formData.append("wallpaperImage", file);
 
     try {
-      const response = await axios.post("http://localhost:5000/api/wallpapers/upload", formData, {
+      const response = await axios.post("https://www.cozyaestheticwallpaper.com/dashboard/api/wallpapers/upload", formData, {
         headers: { "Content-Type": "multipart/form-data" },
       });
       console.log(response.data);
