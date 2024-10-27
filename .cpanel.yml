@@ -1,0 +1,5 @@
+---
+deployment:
+  tasks:
+    - export DEPLOYPATH=/home/webifzwu/cozyaestheticwallpaper.com/frontend/build/
+    - /bin/cp * $DEPLOYPATH
