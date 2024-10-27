@@ -28,7 +28,7 @@ connection.connect((err) => {
 const cors = require("cors");
 app.use(
   cors({
-    origin: "http://cozyaestheticwallpaper.com", // Your frontend domain
+    origin: "https://cozyaestheticwallpaper.com", // Your frontend domain
   })
 );
 app.use(express.json()); // For parsing application/json
