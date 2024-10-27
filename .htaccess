@@ -1,3 +1,32 @@
+# <IfModule mod_rewrite.c>
+#     RewriteEngine On
+
+#     # Redirect to HTTPS
+#     RewriteCond %{HTTPS} off
+#     RewriteRule ^ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
+
+#     # Rewrite rule for the frontend project (Main domain)
+#     RewriteCond %{HTTP_HOST} ^www\.cozyaestheticwallpaper\.com$ [NC]
+#     RewriteCond %{REQUEST_URI} !^/frontend/build/
+#     RewriteCond %{REQUEST_URI} !\.(js|css|png|jpg|jpeg|gif|svg|ico|json)$ [NC]
+#     RewriteRule ^(.*)$ /frontend/build/index.html [L]
+
+#     # Rewrite rule for the admin project (Admin domain)
+#     RewriteCond %{HTTP_HOST} ^cozyaestheticwallpaper\.com$ [NC]
+#     RewriteCond %{REQUEST_URI} ^/admin [NC]
+#     RewriteCond %{REQUEST_URI} !^/backend/
+#     RewriteCond %{REQUEST_URI} !\.(js|css|png|jpg|jpeg|gif|svg|ico|json)$ [NC]
+#     RewriteRule ^(.*)$ /backend/ [L]
+
+#     # If the request is for a file or directory that exists, serve it directly
+#     RewriteCond %{REQUEST_FILENAME} -f [OR]
+#     RewriteCond %{REQUEST_FILENAME} -d
+#     RewriteRule ^ - [L]
+
+#     # If the requested resource does not exist, send it to index.html (Frontend)
+#     RewriteRule ^ /frontend/build/index.html [L]
+# </IfModule>
+
 <IfModule mod_rewrite.c>
     RewriteEngine On
 
@@ -5,24 +34,11 @@
     RewriteCond %{HTTPS} off
     RewriteRule ^ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
 
-    # Rewrite rule for the frontend project (Main domain)
-    RewriteCond %{HTTP_HOST} ^www\.cozyaestheticwallpaper\.com$ [NC]
-    RewriteCond %{REQUEST_URI} !^/frontend/build/
-    RewriteCond %{REQUEST_URI} !\.(js|css|png|jpg|jpeg|gif|svg|ico|json)$ [NC]
-    RewriteRule ^(.*)$ /frontend/build/index.html [L]
-
-    # Rewrite rule for the admin project (Admin domain)
-    RewriteCond %{HTTP_HOST} ^cozyaestheticwallpaper\.com$ [NC]
-    RewriteCond %{REQUEST_URI} ^/admin [NC]
-    RewriteCond %{REQUEST_URI} !^/backend/
-    RewriteCond %{REQUEST_URI} !\.(js|css|png|jpg|jpeg|gif|svg|ico|json)$ [NC]
-    RewriteRule ^(.*)$ /backend/ [L]
-
     # If the request is for a file or directory that exists, serve it directly
     RewriteCond %{REQUEST_FILENAME} -f [OR]
     RewriteCond %{REQUEST_FILENAME} -d
     RewriteRule ^ - [L]
 
-    # If the requested resource does not exist, send it to index.html (Frontend)
+    # Redirect all other requests to index.html (for React Router to handle)
     RewriteRule ^ /frontend/build/index.html [L]
 </IfModule>
