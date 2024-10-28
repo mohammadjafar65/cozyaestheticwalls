@@ -35,7 +35,7 @@ const corsOptions = {
 
 app.use(cors(corsOptions));
 app.use(express.json()); // For parsing application/json
-app.use("/uploads", express.static("uploads")); // Serve static files from the "uploads" folder
+app.use("/uploads", cors(corsOptions), express.static("uploads"));
 
 // Multer storage configuration
 const storage = multer.diskStorage({
