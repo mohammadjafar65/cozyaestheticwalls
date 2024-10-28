@@ -24,18 +24,17 @@ connection.connect((err) => {
   console.log("Connected to MySQL");
 });
 
-// Middleware
-// app.use(cors()); // Enable CORS for all routes
 // CORS configuration
 const corsOptions = {
   origin: 'https://www.cozyaestheticwallpaper.com', // Your frontend domain
-  methods: 'GET, POST, PUT, DELETE', 
+  methods: 'GET, POST, PUT, DELETE',
   allowedHeaders: ['Content-Type', 'Authorization'],
 };
 
-app.use(cors(corsOptions));
+app.use(cors(corsOptions)); // Apply CORS middleware globally
+
 app.use(express.json()); // For parsing application/json
-app.use("/uploads", cors(corsOptions), express.static("uploads"));
+app.use("/uploads", express.static("uploads")); // Serve static files from the "uploads" folder
 
 // Multer storage configuration
 const storage = multer.diskStorage({
@@ -113,7 +112,7 @@ app.use((err, req, res, next) => {
   res.status(500).send('Something went wrong!');
 });
 
-// Other routes and logic...
+// Start the server
 app.listen(port, () => {
   console.log(`Server running on port ${port}`);
 });
