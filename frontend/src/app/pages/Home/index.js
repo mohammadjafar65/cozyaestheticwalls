@@ -78,7 +78,7 @@ const HomePage = () => {
                   </Dialog>
                   {/* Download button with correct wallpaper URL */}
                   <a
-                    className="bg-white rounded-full text-black px-4 py-2 transition-transform duration-500 ease-in-out transform group-hover:scale-110 hover:bg-white/[90%]"
+                    className="bg-white rounded-full flex items-center gap-2 text-black px-4 py-2 transition-transform duration-500 ease-in-out transform group-hover:scale-110 hover:bg-white/[90%]"
                     href={`${
                       process.env.REACT_APP_API_URL
                     }/api/wallpapers/download/${wallpaper.url
@@ -86,7 +86,7 @@ const HomePage = () => {
                       .pop()}`} // Get the filename from wallpaper URL
                     download // Just adding this as a safeguard to force the download
                   >
-                    <Download /> Download
+                    <Download className="w-7 h-7" /> Download
                   </a>
                   {/* <Button
                     className="bg-white rounded-full text-black px-4 py-2 transition-transform duration-500 ease-in-out transform group-hover:scale-110 hover:bg-white/[90%]"
