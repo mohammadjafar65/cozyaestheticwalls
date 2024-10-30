@@ -25,11 +25,13 @@ connection.connect((err) => {
 });
 
 // Middleware
-app.use(cors({
-  origin: 'https://cozyaestheticwallpaper.com',
-  methods: 'GET,POST,PUT,DELETE', // Allow specific methods
-  allowedHeaders: ['Content-Type', 'Authorization'], // Allow specific headers
-}));
+app.use(
+  cors({
+    origin: "https://cozyaestheticwallpaper.com",
+    methods: "GET,POST,PUT,DELETE", // Allow specific methods
+    allowedHeaders: ["Content-Type", "Authorization"], // Allow specific headers
+  })
+);
 // app.use((req, res, next) => {
 //   res.setHeader("Access-Control-Allow-Origin", "*"); // Change * to your specific origin if needed
 //   res.setHeader("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE");
@@ -38,7 +40,11 @@ app.use(cors({
 // });
 app.use(express.json()); // For parsing application/json
 // app.use("/uploads", express.static("uploads")); // Serve static files from the "uploads" folder
-app.use('/uploads', cors({ origin: 'https://cozyaestheticwallpaper.com' }), express.static('uploads'));
+app.use(
+  "/uploads",
+  cors({ origin: "https://cozyaestheticwallpaper.com" }),
+  express.static("uploads")
+);
 
 // Multer storage configuration
 const storage = multer.diskStorage({
@@ -106,6 +112,18 @@ app.delete("/api/wallpapers/:id", (req, res) => {
       res.status(200).json({ message: "Wallpaper deleted successfully" });
     } else {
       res.status(404).json({ error: "Wallpaper not found" });
+    }
+  });
+});
+
+app.get("/api/wallpapers/download/:filename", (req, res) => {
+  const { filename } = req.params;
+  const filePath = path.join(__dirname, "uploads", filename); // Adjust path as per your folder structure
+
+  res.download(filePath, filename, (err) => {
+    if (err) {
+      console.error("Error downloading the file:", err);
+      res.status(500).send("Could not download the file.");
     }
   });
 });

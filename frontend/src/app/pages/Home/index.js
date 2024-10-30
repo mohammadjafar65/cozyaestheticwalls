@@ -79,8 +79,12 @@ const HomePage = () => {
                   {/* Download button with correct wallpaper URL */}
                   <a
                     className="bg-white rounded-full text-black px-4 py-2 transition-transform duration-500 ease-in-out transform group-hover:scale-110 hover:bg-white/[90%]"
-                    href={`${process.env.REACT_APP_API_URL}${wallpaper.url}`} // Direct link to the file
-                    download={wallpaper.title} // Use the wallpaper title as the file name
+                    href={`${
+                      process.env.REACT_APP_API_URL
+                    }/api/wallpapers/download/${wallpaper.url
+                      .split("/")
+                      .pop()}`} // Get the filename from wallpaper URL
+                    download // Just adding this as a safeguard to force the download
                   >
                     <Download /> Download
                   </a>
