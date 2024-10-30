@@ -25,7 +25,9 @@ connection.connect((err) => {
 });
 
 // Middleware
-app.use(cors()); // Enable CORS for all routes
+app.use(cors({
+  origin: 'https://www.cozyaestheticwallpaper.com', // Replace with your frontend domain
+}));
 app.use((req, res, next) => {
   res.setHeader("Access-Control-Allow-Origin", "*"); // Change * to your specific origin if needed
   res.setHeader("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE");
