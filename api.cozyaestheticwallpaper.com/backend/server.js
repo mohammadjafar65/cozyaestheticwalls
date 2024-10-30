@@ -26,7 +26,7 @@ connection.connect((err) => {
 
 // Middleware
 app.use(cors({
-  origin: 'https://cozyaestheticwallpaper.com', // Replace with your frontend domain
+  origin: 'https://www.cozyaestheticwallpaper.com', // Replace with your frontend domain
 }));
 // app.use((req, res, next) => {
 //   res.setHeader("Access-Control-Allow-Origin", "*"); // Change * to your specific origin if needed
