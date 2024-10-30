@@ -31,7 +31,7 @@ const HomePage = () => {
   }, []);
 
   if (loading) {
-    return <p>Loading wallpapers...</p>;
+    return <p className="w-full h-[100vh] flex items-center justify-center">Loading wallpapers...</p>;
   }
 
   return (
@@ -39,21 +39,21 @@ const HomePage = () => {
       <Layout>
         <div className="w-full flex flex-col items-center justify-center pt-[5%] mb-[5%]">
           <img src="logo.png" className="h-[75px]" alt="Logo" />
-          <h1 className="font-bold text-[50px] text-white mt-2">
+          <h1 className="font-bold lg:text-[50px] md:text-[50px] min-[320px]:text-[28px] text-white mt-2">
             Explore. Click. Download.
           </h1>
-          <p className="w-[20%] text-center text-[16px] text-white/[42%]">
+          <p className="lg:w-[40%] md:w-[60%] text-center text-[16px] min-[320px]:w-[80%] md:w-[80%] text-white/[42%]">
             Browse through a vast collection of stunning wallpapers to match
             your style.{" "}
             <span className="text-white">Download your favorites now!</span>
           </p>
         </div>
 
-        <div className="container pb-[8%]">
-          <div className="grid grid-cols-4 gap-y-8">
+        <div className="container lg:pb-[8%] sm:pb-[10%] min-[320px]:pb-[30%] min-[320px]:p-[4%]">
+          <div className="grid lg:grid-cols-4 md:grid-cols-3 gap-5 min-[320px]:grid-cols-2 justify-items-center p-0">
             {wallpapers.map((wallpaper) => (
               <div
-                className="group w-[250px] h-[350px] relative overflow-hidden rounded-[10px]"
+                className="group lg:w-full lg:h-[350px] min-[320px]:w-full min-[320px]:h-[350px] relative overflow-hidden rounded-[10px] p-0"
                 key={wallpaper._id} // Use unique id for the key
               >
                 <img
@@ -78,7 +78,7 @@ const HomePage = () => {
                   </Dialog>
                   {/* Download button with correct wallpaper URL */}
                   <a
-                    className="bg-white rounded-full flex items-center gap-2 text-black px-4 py-2 transition-transform duration-500 ease-in-out transform group-hover:scale-110 hover:bg-white/[90%]"
+                    className="bg-white rounded-full text-[15px] flex items-center gap-2 text-black px-4 py-2 transition-transform duration-500 ease-in-out transform group-hover:scale-110 hover:bg-white/[90%]"
                     href={`${
                       process.env.REACT_APP_API_URL
                     }/api/wallpapers/download/${wallpaper.url
@@ -86,7 +86,7 @@ const HomePage = () => {
                       .pop()}`} // Get the filename from wallpaper URL
                     download // Just adding this as a safeguard to force the download
                   >
-                    <Download className="w-7 h-7" /> Download
+                    <Download className="w-5 h-5" /> Download
                   </a>
                   {/* <Button
                     className="bg-white rounded-full text-black px-4 py-2 transition-transform duration-500 ease-in-out transform group-hover:scale-110 hover:bg-white/[90%]"
