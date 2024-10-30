@@ -77,14 +77,21 @@ const HomePage = () => {
                     </DialogContent>
                   </Dialog>
                   {/* Download button with correct wallpaper URL */}
-                  <Button
+                  <a
+                    className="bg-white rounded-full text-black px-4 py-2 transition-transform duration-500 ease-in-out transform group-hover:scale-110 hover:bg-white/[90%]"
+                    href={`${process.env.REACT_APP_API_URL}${wallpaper.url}`} // Direct link to the file
+                    download={wallpaper.title} // Use the wallpaper title as the file name
+                  >
+                    <Download /> Download
+                  </a>
+                  {/* <Button
                     className="bg-white rounded-full text-black px-4 py-2 transition-transform duration-500 ease-in-out transform group-hover:scale-110 hover:bg-white/[90%]"
                     as="a" // Use the Button component as an anchor
                     href={`${process.env.REACT_APP_API_URL}${wallpaper.url}`} // Provide the direct file URL
                     download={wallpaper.title} // Use the title as the download file name
                   >
                     <Download /> Download
-                  </Button>
+                  </Button> */}
                 </div>
               </div>
             ))}
