@@ -15,23 +15,6 @@ import axios from "axios"; // Import axios for API requests
 const HomePage = () => {
   const [wallpapers, setWallpapers] = useState([]);
 
-  // Function to download the wallpaper
-  const downloadImage = (url, title) => {
-    fetch(url)
-      .then((response) => response.blob())
-      .then((blob) => {
-        const urlBlob = window.URL.createObjectURL(blob);
-        const link = document.createElement("a");
-        link.href = urlBlob;
-        link.setAttribute("download", title); // Sets the filename
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-        window.URL.revokeObjectURL(urlBlob); // Clean up
-      })
-      .catch(() => alert("Failed to download the image. Try again later."));
-  };  
-
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -96,12 +79,9 @@ const HomePage = () => {
                   {/* Download button with correct wallpaper URL */}
                   <Button
                     className="bg-white rounded-full text-black px-4 py-2 transition-transform duration-500 ease-in-out transform group-hover:scale-110 hover:bg-white/[90%]"
-                    onClick={() =>
-                      downloadImage(
-                        `${process.env.REACT_APP_API_URL}${wallpaper.url}`,
-                        wallpaper.title
-                      )
-                    }
+                    as="a" // Use the Button component as an anchor
+                    href={`${process.env.REACT_APP_API_URL}${wallpaper.url}`} // Provide the direct file URL
+                    download={wallpaper.title} // Use the title as the download file name
                   >
                     <Download /> Download
                   </Button>
