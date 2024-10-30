@@ -26,7 +26,9 @@ connection.connect((err) => {
 
 // Middleware
 app.use(cors({
-  origin: 'https://cozyaestheticwallpaper.com', // Replace with your frontend domain
+  origin: 'https://cozyaestheticwallpaper.com',
+  methods: 'GET,POST,PUT,DELETE', // Allow specific methods
+  allowedHeaders: ['Content-Type', 'Authorization'], // Allow specific headers
 }));
 // app.use((req, res, next) => {
 //   res.setHeader("Access-Control-Allow-Origin", "*"); // Change * to your specific origin if needed
@@ -35,7 +37,8 @@ app.use(cors({
 //   next();
 // });
 app.use(express.json()); // For parsing application/json
-app.use("/uploads", express.static("uploads")); // Serve static files from the "uploads" folder
+// app.use("/uploads", express.static("uploads")); // Serve static files from the "uploads" folder
+app.use('/uploads', cors({ origin: 'https://cozyaestheticwallpaper.com' }), express.static('uploads'));
 
 // Multer storage configuration
 const storage = multer.diskStorage({
