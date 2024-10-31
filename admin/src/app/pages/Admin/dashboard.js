@@ -67,6 +67,7 @@ const Dashboard = () => {
             <TableHead>Title</TableHead>
             <TableHead>Description</TableHead>
             <TableHead>Image</TableHead>
+            <TableHead>Category</TableHead>
             <TableHead>Actions</TableHead>
           </TableRow>
         </TableHeader>
