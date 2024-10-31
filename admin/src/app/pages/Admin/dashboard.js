@@ -1,5 +1,21 @@
 import React, { useEffect, useState } from "react";
 import { Button } from "../../../components/ui/button";
+import axios from "axios";
+import Layout from "../Custom-Components/layout";
+import {
+  SidebarProvider,
+  SidebarTrigger,
+} from "../../../components/ui/sidebar";
+import {
+  ColumnDef,
+  useReactTable,
+  getCoreRowModel,
+  getPaginationRowModel,
+  getSortedRowModel,
+  getFilteredRowModel,
+  flexRender,
+} from "@tanstack/react-table";
+import { Input } from "../../../components/ui/input";
 import {
   Table,
   TableBody,
@@ -8,11 +24,60 @@ import {
   TableHeader,
   TableRow,
 } from "../../../components/ui/table";
-import axios from "axios";
+import { Plus, Trash2 } from "lucide-react";
+import {
+  DropdownMenu,
+  DropdownMenuCheckboxItem,
+  DropdownMenuContent,
+  DropdownMenuTrigger,
+} from "../../../components/ui/dropdown-menu";
+import AddWallpaper from "./addWallpaper";
 
 const Dashboard = () => {
   const [wallpapers, setWallpapers] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [sorting, setSorting] = useState([]);
+  const [columnFilters, setColumnFilters] = useState([]);
+  const [columnVisibility, setColumnVisibility] = useState({});
+
+  // Define columns for the DataTable
+  const columns = [
+    {
+      accessorKey: "image",
+      header: "Image",
+      cell: ({ row }) => (
+        <img
+          src={`${process.env.REACT_APP_API_URL}${row.original.url}`}
+          alt="Wallpaper"
+          className="w-[75px] h-[75px] object-cover rounded"
+        />
+      ),
+    },
+    {
+      accessorKey: "title",
+      header: "Title",
+    },
+    {
+      accessorKey: "description",
+      header: "Description",
+    },
+    {
+      accessorKey: "category",
+      header: "Category",
+    },
+    {
+      id: "actions",
+      header: "Actions",
+      cell: ({ row }) => (
+        <Button
+          onClick={() => handleDelete(row.original.id)}
+          className="bg-red-500 text-white"
+        >
+          <Trash2 /> Delete
+        </Button>
+      ),
+    },
+  ];
 
   // Fetch wallpapers from the API
   useEffect(() => {
@@ -38,9 +103,7 @@ const Dashboard = () => {
         await axios.delete(
           `${process.env.REACT_APP_API_URL}/api/wallpapers/${id}`
         );
-        // Update the wallpapers state after deletion
         setWallpapers(wallpapers.filter((wallpaper) => wallpaper.id !== id));
-
         alert("Wallpaper deleted successfully!");
       } catch (error) {
         console.error("Failed to delete wallpaper:", error);
@@ -49,62 +112,117 @@ const Dashboard = () => {
     }
   };
 
+  const table = useReactTable({
+    data: wallpapers,
+    columns,
+    state: { sorting, columnFilters, columnVisibility },
+    onSortingChange: setSorting,
+    onColumnFiltersChange: setColumnFilters,
+    onColumnVisibilityChange: setColumnVisibility,
+    getCoreRowModel: getCoreRowModel(),
+    getPaginationRowModel: getPaginationRowModel(),
+    getSortedRowModel: getSortedRowModel(),
+    getFilteredRowModel: getFilteredRowModel(),
+  });
+
   if (loading) {
     return <p>Loading wallpapers...</p>;
   }
 
   return (
-    <div className="p-8">
-      <div className="mb-4">
-        <a href="/addwallpaper">
-          <Button className="bg-blue-500 text-white">Add Wallpaper</Button>
-        </a>
+    <Layout>
+      <div className="p-8 w-full">
+        <div className="mb-4 flex items-center justify-between w-full">
+          <div className="flex items-center gap-5">
+            <SidebarTrigger className="" />
+          </div>
+          <AddWallpaper/>
+          {/* <a href="/addwallpaper">
+            <Button className="bg-blue-500 text-white">Add Wallpaper</Button>
+          </a> */}
+        </div>
+        <div className="w-full">
+          <div className="flex items-center justify-between py-4 w-full">
+            <h1 className="text-[25px]">Dashboard</h1>
+            <Input
+              placeholder="Filter by title..."
+              value={table.getColumn("title")?.getFilterValue() ?? ""}
+              onChange={(e) =>
+                table.getColumn("title")?.setFilterValue(e.target.value)
+              }
+              className="max-w-sm bg-[#18181B] border-[216 34% 17%] focus-visible:ring-offset-0"
+            />
+          </div>
+          <div className="rounded-md border w-full">
+            <Table className="w-full">
+              <TableHeader>
+                {table.getHeaderGroups().map((headerGroup) => (
+                  <TableRow key={headerGroup.id} className="hover:bg-[#18181B]">
+                    {headerGroup.headers.map((header) => (
+                      <TableHead key={header.id}>
+                        {header.isPlaceholder
+                          ? null
+                          : flexRender(
+                              header.column.columnDef.header,
+                              header.getContext()
+                            )}
+                      </TableHead>
+                    ))}
+                  </TableRow>
+                ))}
+              </TableHeader>
+              <TableBody>
+                {table.getRowModel().rows?.length ? (
+                  table.getRowModel().rows.map((row) => (
+                    <TableRow
+                      key={row.id}
+                      data-state={row.getIsSelected() && "selected"}
+                      className="hover:bg-[#18181B]"
+                    >
+                      {row.getVisibleCells().map((cell) => (
+                        <TableCell key={cell.id}>
+                          {flexRender(
+                            cell.column.columnDef.cell,
+                            cell.getContext()
+                          )}
+                        </TableCell>
+                      ))}
+                    </TableRow>
+                  ))
+                ) : (
+                  <TableRow>
+                    <TableCell
+                      colSpan={columns.length}
+                      className="h-24 text-center"
+                    >
+                      No results.
+                    </TableCell>
+                  </TableRow>
+                )}
+              </TableBody>
+            </Table>
+          </div>
+          <div className="flex items-center justify-end space-x-2 py-4">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => table.previousPage()}
+              disabled={!table.getCanPreviousPage()}
+            >
+              Previous
+            </Button>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => table.nextPage()}
+              disabled={!table.getCanNextPage()}
+            >
+              Next
+            </Button>
+          </div>
+        </div>
       </div>
-
-      <Table>
-        <TableHeader>
-          <TableRow>
-            <TableHead>Title</TableHead>
-            <TableHead>Description</TableHead>
-            <TableHead>Image</TableHead>
-            <TableHead>Category</TableHead>
-            <TableHead>Actions</TableHead>
-          </TableRow>
-        </TableHeader>
-        <TableBody>
-          {wallpapers.length ? (
-            wallpapers.map((wallpaper) => (
-              <TableRow key={wallpaper.id}>
-                <TableCell>{wallpaper.title}</TableCell>
-                <TableCell>{wallpaper.description}</TableCell>
-                <TableCell>{wallpaper.category}</TableCell>
-                <TableCell>
-                  <img
-                    src={`${process.env.REACT_APP_API_URL}${wallpaper.url}`}
-                    alt="Wallpaper"
-                    className="w-[75px] h-[75px] object-cover rounded"
-                  />
-                </TableCell>
-                <TableCell>
-                  <Button
-                    onClick={() => handleDelete(wallpaper.id)}
-                    className="bg-red-500 text-white"
-                  >
-                    Delete
-                  </Button>
-                </TableCell>
-              </TableRow>
-            ))
-          ) : (
-            <TableRow>
-              <TableCell colSpan={5} className="h-24 text-center">
-                No results.
-              </TableCell>
-            </TableRow>
-          )}
-        </TableBody>
-      </Table>
-    </div>
+    </Layout>
   );
 };
 

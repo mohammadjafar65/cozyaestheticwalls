@@ -35,8 +35,10 @@ if (!fs.existsSync("./uploads")) {
 app.use(
   cors({
     origin: [
-      "https://cozyaestheticwallpaper.com",
-      "https://admin.cozyaestheticwallpaper.com",
+      process.env.ORIGIN,
+      process.env.ORIGINTWO
+      // "https://cozyaestheticwallpaper.com",
+      // "https://admin.cozyaestheticwallpaper.com",
     ],
     methods: ["GET", "POST", "PUT", "DELETE"],
     allowedHeaders: ["Content-Type", "Authorization"],

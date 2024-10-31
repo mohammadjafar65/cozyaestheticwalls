@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { Plus, Trash2 } from "lucide-react";
 import { Label } from "../../../components/ui/label";
 import {
   Card,
@@ -17,6 +18,14 @@ import {
   SelectValue,
   SelectContent,
 } from "../../../components/ui/select";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "../../../components/ui/dialog";
 import axios from "axios";
 
 const AddWallpaper = () => {
@@ -58,69 +67,82 @@ const AddWallpaper = () => {
   };
 
   return (
-    <div className="w-full h-[100vh] flex items-center justify-center">
-      <Card className="w-[450px]">
-        <CardHeader>
-          <CardTitle>Add New Wallpaper</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <form onSubmit={handleSubmit}>
-            <div className="grid w-full items-center gap-4">
-              <div className="flex flex-col space-y-1.5">
-                <Label htmlFor="title">Title</Label>
-                <Input
-                  id="title"
-                  value={title}
-                  onChange={(e) => setTitle(e.target.value)}
-                  placeholder="Title of the wallpaper"
-                />
-              </div>
-              <div className="flex flex-col space-y-1.5">
-                <Label htmlFor="file">Wallpaper Image</Label>
-                <Input
-                  type="file"
-                  id="file"
-                  accept="image/*"
-                  onChange={(e) => setFile(e.target.files[0])}
-                />
-              </div>
-              <div className="flex flex-col space-y-1.5">
-                <Label htmlFor="description">Description</Label>
-                <Textarea
-                  id="description"
-                  value={description}
-                  onChange={(e) => setDescription(e.target.value)}
-                  placeholder="Enter description of wallpaper for SEO"
-                />
-              </div>
-              <div className="flex flex-col space-y-1.5">
-                <Label htmlFor="category">Category</Label>
-                <Select
-                  value={category}
-                  onValueChange={(value) => setCategory(value)}
-                  placeholder="Select a category"
-                  className="w-full"
-                >
-                  <SelectTrigger className="w-[180px]">
-                    <SelectValue placeholder="Select Category" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="Phone">Phone</SelectItem>
-                    <SelectItem value="Desktop">Desktop</SelectItem>
-                    <SelectItem value="Tablet">Tablet</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-            </div>
-            <CardFooter className="flex justify-between w-full mt-5">
-              <Button type="submit" className="w-full">
-                Upload
-              </Button>
-            </CardFooter>
-          </form>
-        </CardContent>
-      </Card>
-    </div>
+    <Dialog>
+      <DialogTrigger>
+        <Button className="bg-blue-500 text-white"><Plus /> Add Wallpaper</Button>
+      </DialogTrigger>
+      <DialogContent className="bg-transparent border-none">
+        <DialogHeader>
+          {/* <DialogTitle>Are you absolutely sure?</DialogTitle> */}
+          <DialogDescription>
+            <Card className="w-[450px] bg-[#18181B] border-[216 34% 17%]">
+              <CardHeader>
+                <CardTitle className="text-white font-normal">Add New Wallpaper</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <form onSubmit={handleSubmit} className="text-white">
+                  <div className="grid w-full items-center gap-4">
+                    <div className="flex flex-col space-y-1.5">
+                      <Label htmlFor="title">Title</Label>
+                      <Input
+                        id="title"
+                        value={title}
+                        onChange={(e) => setTitle(e.target.value)}
+                        placeholder="Title of the wallpaper"
+                        className="max-w-sm bg-[#18181B] border-[216 34% 17%] focus-visible:ring-offset-0"
+                      />
+                    </div>
+                    <div className="flex flex-col space-y-1.5">
+                      <Label htmlFor="file">Wallpaper Image</Label>
+                      <Input
+                        type="file"
+                        id="file"
+                        accept="image/*"
+                        onChange={(e) => setFile(e.target.files[0])}
+                        className="max-w-sm bg-[#18181B] border-[216 34% 17%] focus-visible:ring-offset-0 text-white file:text-white"
+                      />
+                    </div>
+                    <div className="flex flex-col space-y-1.5">
+                      <Label htmlFor="description">Description</Label>
+                      <Textarea
+                        id="description"
+                        value={description}
+                        onChange={(e) => setDescription(e.target.value)}
+                        placeholder="Enter description of wallpaper for SEO"
+                        className="max-w-sm bg-[#18181B] border-[216 34% 17%] focus-visible:ring-offset-0"
+                      />
+                    </div>
+                    <div className="flex flex-col space-y-1.5">
+                      <Label htmlFor="category">Choose Device</Label>
+                      <Select
+                        value={category}
+                        onValueChange={(value) => setCategory(value)}
+                        placeholder="Select a Device"
+                        className="w-full"
+                      >
+                        <SelectTrigger className="max-w-sm bg-[#18181B] border-[216 34% 17%] focus-visible:ring-offset-0">
+                          <SelectValue placeholder="Select Device" />
+                        </SelectTrigger>
+                        <SelectContent className="max-w-sm bg-[#18181B] border-[216 34% 17%] focus-visible:ring-offset-0 text-white">
+                          <SelectItem value="Phone">Phone</SelectItem>
+                          <SelectItem value="Desktop">Desktop</SelectItem>
+                          <SelectItem value="Tablet">Tablet</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                  </div>
+                  <CardFooter className="flex justify-between w-full mt-5 p-0">
+                    <Button type="submit" className="w-full bg-blue-500 text-white">
+                      Upload
+                    </Button>
+                  </CardFooter>
+                </form>
+              </CardContent>
+            </Card>
+          </DialogDescription>
+        </DialogHeader>
+      </DialogContent>
+    </Dialog>
   );
 };
 
