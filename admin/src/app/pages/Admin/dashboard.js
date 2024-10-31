@@ -35,7 +35,9 @@ const Dashboard = () => {
     );
     if (confirmDelete) {
       try {
-        await axios.delete(`${process.env.REACT_APP_API_URL}/api/wallpapers/${id}`);
+        await axios.delete(
+          `${process.env.REACT_APP_API_URL}/api/wallpapers/${id}`
+        );
         // Update the wallpapers state after deletion
         setWallpapers(wallpapers.filter((wallpaper) => wallpaper.id !== id));
 
@@ -74,6 +76,7 @@ const Dashboard = () => {
               <TableRow key={wallpaper.id}>
                 <TableCell>{wallpaper.title}</TableCell>
                 <TableCell>{wallpaper.description}</TableCell>
+                <TableCell>{wallpaper.category}</TableCell>
                 <TableCell>
                   <img
                     src={`${process.env.REACT_APP_API_URL}${wallpaper.url}`}
@@ -93,7 +96,7 @@ const Dashboard = () => {
             ))
           ) : (
             <TableRow>
-              <TableCell colSpan={4} className="h-24 text-center">
+              <TableCell colSpan={5} className="h-24 text-center">
                 No results.
               </TableCell>
             </TableRow>
