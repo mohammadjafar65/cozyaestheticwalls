@@ -19,7 +19,7 @@ const HomePage = () => {
 
   useEffect(() => {
     axios
-      .get(`${process.env.REACT_APP_API_URL}/api/wallpapers`)
+      .get(`${process.env.REACT_APP_API_URL}/api/wallpapers/category/Phone`) // Fetch only Phone category wallpapers
       .then((response) => {
         setWallpapers(response.data);
         setLoading(false); // Stop loading when data is fetched
@@ -31,7 +31,11 @@ const HomePage = () => {
   }, []);
 
   if (loading) {
-    return <p className="w-full h-[100vh] flex items-center justify-center">Loading wallpapers...</p>;
+    return (
+      <p className="w-full h-[100vh] flex items-center justify-center">
+        Loading wallpapers...
+      </p>
+    );
   }
 
   return (
@@ -42,14 +46,14 @@ const HomePage = () => {
           <h1 className="font-bold lg:text-[50px] md:text-[50px] min-[320px]:text-[28px] text-white mt-2">
             Explore. Click. Download.
           </h1>
-          <p className="lg:w-[40%] md:w-[60%] text-center text-[16px] min-[320px]:w-[80%] md:w-[80%] text-white/[42%]">
+          <p className="lg:w-[20%] md:w-[60%] text-center text-[16px] min-[320px]:w-[80%] md:w-[80%] text-white/[42%]">
             Browse through a vast collection of stunning wallpapers to match
             your style.{" "}
             <span className="text-white">Download your favorites now!</span>
           </p>
         </div>
 
-        <div className="container lg:pb-[8%] sm:pb-[10%] min-[320px]:pb-[30%] min-[320px]:p-[4%]">
+        <div className="container lg:pb-[8%] sm:pb-[10%] min-[320px]:pb-[30%] min-[320px]:px-[4%]">
           <div className="grid lg:grid-cols-4 md:grid-cols-3 gap-5 min-[320px]:grid-cols-2 justify-items-center p-0">
             {wallpapers.map((wallpaper) => (
               <div
@@ -57,7 +61,7 @@ const HomePage = () => {
                 key={wallpaper._id} // Use unique id for the key
               >
                 <img
-                  src={`${process.env.REACT_APP_API_URL}${wallpaper.url}`}
+                  src={`${process.env.REACT_APP_API_URL}${wallpaper.thumbnailUrl}`}
                   className="object-cover w-[250px] h-[350px] rounded-[10px] transition-transform duration-500 ease-in-out transform group-hover:scale-105"
                   alt={wallpaper.title}
                   loading="lazy"

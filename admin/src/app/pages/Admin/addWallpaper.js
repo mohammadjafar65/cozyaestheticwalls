@@ -10,35 +10,47 @@ import {
 import { Input } from "../../../components/ui/input";
 import { Button } from "../../../components/ui/button";
 import { Textarea } from "../../../components/ui/textarea";
+import {
+  Select,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+  SelectContent,
+} from "../../../components/ui/select";
 import axios from "axios";
 
 const AddWallpaper = () => {
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
+  const [category, setCategory] = useState("");
   const [file, setFile] = useState(null);
 
   const handleSubmit = async (e) => {
     e.preventDefault(); // Prevent form refresh
-    if (!file) {
-      alert("Please select a file to upload.");
+    if (!file || !category) {
+      alert("Please select a file and category to upload.");
       return;
     }
 
     const formData = new FormData();
     formData.append("title", title);
     formData.append("description", description);
+    formData.append("category", category); // Add category to form data
     formData.append("wallpaperImage", file);
 
     try {
-      const response = await axios.post(`${process.env.REACT_APP_API_URL}/api/wallpapers/upload`, formData, {
-        headers: { "Content-Type": "multipart/form-data" },
-      });
+      const response = await axios.post(
+        `${process.env.REACT_APP_API_URL}/api/wallpapers/upload`,
+        formData,
+        { headers: { "Content-Type": "multipart/form-data" } }
+      );
       console.log(response.data);
       alert("Wallpaper uploaded successfully!");
       // Optionally clear form fields after upload
       setTitle("");
       setDescription("");
       setFile(null);
+      setCategory("");
     } catch (error) {
       console.error(error);
       alert("Failed to upload wallpaper.");
@@ -80,6 +92,24 @@ const AddWallpaper = () => {
                   onChange={(e) => setDescription(e.target.value)}
                   placeholder="Enter description of wallpaper for SEO"
                 />
+              </div>
+              <div className="flex flex-col space-y-1.5">
+                <Label htmlFor="category">Category</Label>
+                <Select
+                  value={category}
+                  onValueChange={(value) => setCategory(value)}
+                  placeholder="Select a category"
+                  className="w-full"
+                >
+                  <SelectTrigger className="w-[180px]">
+                    <SelectValue placeholder="Select Category" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="Phone">Phone</SelectItem>
+                    <SelectItem value="Desktop">Desktop</SelectItem>
+                    <SelectItem value="Tablet">Tablet</SelectItem>
+                  </SelectContent>
+                </Select>
               </div>
             </div>
             <CardFooter className="flex justify-between w-full mt-5">

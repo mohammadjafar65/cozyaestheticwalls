@@ -3,6 +3,7 @@ const multer = require("multer");
 const path = require("path");
 const cors = require("cors");
 const mysql = require("mysql2");
+const sharp = require("sharp");
 const app = express();
 require("dotenv").config();
 const port = process.env.PORT || 3000;
@@ -61,28 +62,100 @@ const storage = multer.diskStorage({
 
 const upload = multer({ storage: storage });
 
-// Upload wallpaper and store metadata in MySQL
+// Upload wallpaper with category and store metadata in MySQL
 app.post(
   "/api/wallpapers/upload",
   upload.single("wallpaperImage"),
-  (req, res) => {
-    const { title, description } = req.body;
-    const imageUrl = `/uploads/${req.file.filename}`;
+  async (req, res) => {
+    const { title, description, category } = req.body; // Include category in the request
+    const originalImageUrl = `/uploads/${req.file.filename}`;
+    const thumbnailFilename = `thumbnail-${Date.now()}.webp`;
+    const thumbnailUrl = `/uploads/${thumbnailFilename}`;
 
-    const query =
-      "INSERT INTO wallpapers (title, url, description) VALUES (?, ?, ?)";
-    connection.query(query, [title, imageUrl, description], (err, result) => {
-      if (err) {
-        console.error("Error inserting wallpaper into MySQL:", err);
-        return res.status(500).json({ error: "Failed to upload wallpaper" });
+    try {
+      // Set width based on category
+      let width;
+      switch (category) {
+        case "Phone":
+          width = 250; // Width for phone category
+          break;
+        case "Desktop":
+          width = 800; // Width for desktop category
+          break;
+        case "Tablet":
+          width = 500; // Width for tablet category
+          break;
+        default:
+          width = 250; // Default width if no category is specified
       }
-      res.json({
-        message: "Wallpaper uploaded successfully",
-        id: result.insertId,
-      });
-    });
+      // Create a compressed thumbnail
+      await sharp(req.file.path)
+        .resize({ width })
+        .webp({ quality: 100 })
+        .toFile(path.join(__dirname, "uploads", thumbnailFilename));
+
+      // Store original and thumbnail URLs along with the category in MySQL
+      const query =
+        "INSERT INTO wallpapers (title, url, description, thumbnailUrl, category) VALUES (?, ?, ?, ?, ?)";
+      connection.query(
+        query,
+        [title, originalImageUrl, description, thumbnailUrl, category],
+        (err, result) => {
+          if (err) {
+            console.error("Error inserting wallpaper into MySQL:", err);
+            return res
+              .status(500)
+              .json({ error: "Failed to upload wallpaper" });
+          }
+          res.json({
+            message: "Wallpaper and thumbnail uploaded successfully",
+            id: result.insertId,
+            thumbnailUrl,
+            originalImageUrl,
+          });
+        }
+      );
+    } catch (error) {
+      console.error("Error creating thumbnail:", error);
+      res.status(500).json({ error: "Failed to create thumbnail" });
+    }
   }
 );
+
+// app.post(
+//   "/api/wallpapers/upload",
+//   upload.single("wallpaperImage"),
+//   (req, res) => {
+//     const { title, description } = req.body;
+//     const imageUrl = `/uploads/${req.file.filename}`;
+
+//     const query =
+//       "INSERT INTO wallpapers (title, url, description) VALUES (?, ?, ?)";
+//     connection.query(query, [title, imageUrl, description], (err, result) => {
+//       if (err) {
+//         console.error("Error inserting wallpaper into MySQL:", err);
+//         return res.status(500).json({ error: "Failed to upload wallpaper" });
+//       }
+//       res.json({
+//         message: "Wallpaper uploaded successfully",
+//         id: result.insertId,
+//       });
+//     });
+//   }
+// );
+
+// Fetch wallpapers by category
+app.get("/api/wallpapers/category/:category", (req, res) => {
+  const { category } = req.params;
+  const query = "SELECT * FROM wallpapers WHERE category = ?";
+  connection.query(query, [category], (err, results) => {
+    if (err) {
+      console.error("Error fetching wallpapers by category from MySQL:", err);
+      return res.status(500).json({ error: "Failed to fetch wallpapers" });
+    }
+    res.json(results);
+  });
+});
 
 // Fetch all wallpapers
 app.get("/api/wallpapers", (req, res) => {
