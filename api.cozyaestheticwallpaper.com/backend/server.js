@@ -28,19 +28,14 @@ connection.connect((err) => {
 // Middleware
 app.use(
   cors({
-    // origin: [process.env.ORIGIN],
-    // origin: [process.env.ORIGIN, process.env.ORIGINTWO],
-    origin: [
-      "https://cozyaestheticwallpaper.com", 
-      "https://api.cozyaestheticwallpaper.com"
-    ],
-    methods: "GET,POST,PUT,DELETE", // Allow specific methods
-    allowedHeaders: ["Content-Type", "Authorization"], // Allow specific headers
+    origin: ["https://cozyaestheticwallpaper.com", "https://api.cozyaestheticwallpaper.com"],
+    methods: ["GET", "POST", "PUT", "DELETE"],
+    allowedHeaders: ["Content-Type", "Authorization"],
     credentials: true,
   })
 );
+app.use("/uploads", express.static("uploads"));
 app.use(express.json()); // For parsing application/json
-// app.use("/uploads", express.static("uploads")); // Serve static files from the "uploads" folder
 app.use(
   "/uploads",
   cors({ origin: "https://cozyaestheticwallpaper.com" }),
