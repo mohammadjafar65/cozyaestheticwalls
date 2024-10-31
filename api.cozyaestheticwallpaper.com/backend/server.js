@@ -36,13 +36,13 @@ app.use(
 );
 app.use("/uploads", express.static("uploads"));
 app.use(express.json()); // For parsing application/json
-app.use(
-  "/uploads",
-  cors({ origin: "https://cozyaestheticwallpaper.com" }),
-  // cors({ origin: [process.env.ORIGIN] }),
-  // cors({ origin: [process.env.ORIGIN, process.env.ORIGINTWO] }),
-  express.static("uploads")
-);
+// app.use(
+//   "/uploads",
+//   cors({ origin: "https://cozyaestheticwallpaper.com" }),
+//   // cors({ origin: [process.env.ORIGIN] }),
+//   // cors({ origin: [process.env.ORIGIN, process.env.ORIGINTWO] }),
+//   express.static("uploads")
+// );
 
 // Multer storage configuration
 const storage = multer.diskStorage({
