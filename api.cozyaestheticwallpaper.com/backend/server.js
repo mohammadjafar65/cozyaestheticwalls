@@ -36,7 +36,7 @@ app.use(
   cors({
     origin: [
       "https://cozyaestheticwallpaper.com",
-      "https://api.cozyaestheticwallpaper.com",
+      "https://admin.cozyaestheticwallpaper.com",
     ],
     methods: ["GET", "POST", "PUT", "DELETE"],
     allowedHeaders: ["Content-Type", "Authorization"],

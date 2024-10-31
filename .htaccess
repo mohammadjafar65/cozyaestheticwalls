@@ -24,7 +24,7 @@
     # Rewrite rule for the backend project
     RewriteCond %{HTTP_HOST} ^api\.cozyaestheticwallpaper\.com$ [NC]
     RewriteCond %{REQUEST_URI} !^/backend/
-    RewriteRule ^(.*)$ http://api.cozyaestheticwallpaper.com:3000/$1 [P,L]
+    RewriteRule ^(.*)$ https://api.cozyaestheticwallpaper.com:3000/$1 [P,L]
 
 </IfModule>
 
