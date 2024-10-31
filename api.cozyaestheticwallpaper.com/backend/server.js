@@ -30,17 +30,15 @@ app.use(
   cors({
     // origin: [process.env.ORIGIN],
     // origin: [process.env.ORIGIN, process.env.ORIGINTWO],
-    origin: "https://cozyaestheticwallpaper.com",
+    origin: [
+      "https://cozyaestheticwallpaper.com", 
+      "https://api.cozyaestheticwallpaper.com"
+    ],
     methods: "GET,POST,PUT,DELETE", // Allow specific methods
     allowedHeaders: ["Content-Type", "Authorization"], // Allow specific headers
+    credentials: true,
   })
 );
-// app.use((req, res, next) => {
-//   res.setHeader("Access-Control-Allow-Origin", "*"); // Change * to your specific origin if needed
-//   res.setHeader("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE");
-//   res.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization");
-//   next();
-// });
 app.use(express.json()); // For parsing application/json
 // app.use("/uploads", express.static("uploads")); // Serve static files from the "uploads" folder
 app.use(
