@@ -4,6 +4,7 @@ const path = require("path");
 const cors = require("cors");
 const mysql = require("mysql2");
 const sharp = require("sharp");
+const fs = require("fs");
 const app = express();
 require("dotenv").config();
 const port = process.env.PORT || 3000;
@@ -20,15 +21,23 @@ const connection = mysql.createConnection({
 connection.connect((err) => {
   if (err) {
     console.error("Error connecting to MySQL:", err);
-    return;
+    process.exit(1); // Exit if connection fails
   }
   console.log("Connected to MySQL");
 });
 
+// Ensure uploads directory exists
+if (!fs.existsSync("./uploads")) {
+  fs.mkdirSync("./uploads");
+}
+
 // Middleware
 app.use(
   cors({
-    origin: ["https://cozyaestheticwallpaper.com", "https://api.cozyaestheticwallpaper.com"],
+    origin: [
+      "https://cozyaestheticwallpaper.com",
+      "https://api.cozyaestheticwallpaper.com",
+    ],
     methods: ["GET", "POST", "PUT", "DELETE"],
     allowedHeaders: ["Content-Type", "Authorization"],
     credentials: true,
@@ -36,13 +45,6 @@ app.use(
 );
 app.use("/uploads", express.static("uploads"));
 app.use(express.json()); // For parsing application/json
-// app.use(
-//   "/uploads",
-//   cors({ origin: "https://cozyaestheticwallpaper.com" }),
-//   // cors({ origin: [process.env.ORIGIN] }),
-//   // cors({ origin: [process.env.ORIGIN, process.env.ORIGINTWO] }),
-//   express.static("uploads")
-// );
 
 // Multer storage configuration
 const storage = multer.diskStorage({
@@ -204,7 +206,7 @@ app.use((err, req, res, next) => {
   res.status(500).send("Something went wrong!");
 });
 
-// Other routes and logic...
+// Start the server
 app.listen(port, () => {
   console.log(`Server running on port ${port}`);
 });
