@@ -36,7 +36,7 @@ app.use(
   cors({
     origin: [
       process.env.ORIGIN,
-      process.env.ORIGINTWO
+      process.env.ORIGINTWO,
       // "https://cozyaestheticwallpaper.com",
       // "https://admin.cozyaestheticwallpaper.com",
     ],
@@ -95,10 +95,10 @@ app.post(
 
       // Store original and thumbnail URLs along with the category in MySQL
       const query =
-        "INSERT INTO wallpapers (title, url, description, thumbnailUrl, category) VALUES (?, ?, ?, ?, ?)";
+        "INSERT INTO wallpapers (title, url, description, thumbnailUrl, category, isNew) VALUES (?, ?, ?, ?, ?, ?)";
       connection.query(
         query,
-        [title, originalImageUrl, description, thumbnailUrl, category],
+        [title, originalImageUrl, description, thumbnailUrl, category, true], // Set isNew to true
         (err, result) => {
           if (err) {
             console.error("Error inserting wallpaper into MySQL:", err);
@@ -143,10 +143,23 @@ app.post(
 //   }
 // );
 
+function removeNewTag() {
+  const query = "UPDATE wallpapers SET isNew = FALSE WHERE isNew = TRUE AND createdAt <= NOW() - INTERVAL 10 MINUTE";
+  connection.query(query, (err, result) => {
+    if (err) {
+      console.error("Error updating isNew status:", err);
+    }
+  });
+}
+
+// Run every minute
+setInterval(removeNewTag, 60000);
+
 // Fetch wallpapers by category
 app.get("/api/wallpapers/category/:category", (req, res) => {
   const { category } = req.params;
-  const query = "SELECT * FROM wallpapers WHERE category = ?";
+  const query =
+    "SELECT * FROM wallpapers WHERE category = ? ORDER BY createdAt DESC";
   connection.query(query, [category], (err, results) => {
     if (err) {
       console.error("Error fetching wallpapers by category from MySQL:", err);
@@ -192,7 +205,15 @@ app.delete("/api/wallpapers/:id", (req, res) => {
 
 app.get("/api/wallpapers/download/:filename", (req, res) => {
   const { filename } = req.params;
-  const filePath = path.join(__dirname, "uploads", filename); // Adjust path as per your folder structure
+  const filePath = path.join(__dirname, "uploads", filename);
+
+  // Update isNew status in database for downloaded wallpaper
+  const updateQuery = "UPDATE wallpapers SET isNew = FALSE WHERE url = ?";
+  connection.query(updateQuery, [`/uploads/${filename}`], (err) => {
+    if (err) {
+      console.error("Error updating isNew status on download:", err);
+    }
+  });
 
   res.download(filePath, filename, (err) => {
     if (err) {
@@ -201,6 +222,7 @@ app.get("/api/wallpapers/download/:filename", (req, res) => {
     }
   });
 });
+
 
 // Middleware to handle errors globally
 app.use((err, req, res, next) => {
