@@ -8,9 +8,7 @@ export default function Layout({ children }) {
   return (
     <SidebarProvider>
       <AppSidebar />
-      <main className="w-full">
-        {children}
-      </main>
+      <main className="w-full">{children}</main>
     </SidebarProvider>
   );
 }

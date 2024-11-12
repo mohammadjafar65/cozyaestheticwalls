@@ -32,37 +32,41 @@ const AddWallpaper = () => {
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [category, setCategory] = useState("");
-  const [file, setFile] = useState(null);
+  const [files, setFiles] = useState([]);
 
   const handleSubmit = async (e) => {
     e.preventDefault(); // Prevent form refresh
-    if (!file || !category) {
-      alert("Please select a file and category to upload.");
+    if (files.length === 0 || !category) {
+      alert("Please select at least one file and a category to upload.");
       return;
     }
 
     const formData = new FormData();
     formData.append("title", title);
     formData.append("description", description);
-    formData.append("category", category); // Add category to form data
-    formData.append("wallpaperImage", file);
+    formData.append("category", category);
+
+    // Append each selected file to form data
+    files.forEach((file) => {
+      formData.append("wallpaperImages", file);
+    });
 
     try {
       const response = await axios.post(
-        `${process.env.REACT_APP_API_URL}/api/wallpapers/upload`,
+        `${process.env.REACT_APP_API_URL}/api/wallpapers/upload-multiple`,
         formData,
         { headers: { "Content-Type": "multipart/form-data" } }
       );
       console.log(response.data);
-      alert("Wallpaper uploaded successfully!");
+      alert("Wallpapers uploaded successfully!");
       // Optionally clear form fields after upload
       setTitle("");
       setDescription("");
-      setFile(null);
+      setFiles([]);
       setCategory("");
     } catch (error) {
       console.error(error);
-      alert("Failed to upload wallpaper.");
+      alert("Failed to upload wallpapers.");
     }
   };
 
@@ -88,21 +92,22 @@ const AddWallpaper = () => {
                         id="title"
                         value={title}
                         onChange={(e) => setTitle(e.target.value)}
-                        placeholder="Title of the wallpaper"
+                        placeholder="Title of the wallpaper collection"
                         className="max-w-sm bg-[#18181B] border-[216 34% 17%] focus-visible:ring-offset-0"
                       />
                     </div>
                     <div className="flex flex-col space-y-1.5">
-                      <Label htmlFor="file">Wallpaper Image</Label>
+                      <Label htmlFor="file">Wallpaper Images</Label>
                       <Input
                         type="file"
                         id="file"
                         accept="image/*"
-                        onChange={(e) => setFile(e.target.files[0])}
+                        multiple
+                        onChange={(e) => setFiles(Array.from(e.target.files))}
                         className="max-w-sm bg-[#18181B] border-[216 34% 17%] focus-visible:ring-offset-0 text-white file:text-white"
                       />
                     </div>
-                    <div className="flex flex-col space-y-1.5">
+                    {/* <div className="flex flex-col space-y-1.5">
                       <Label htmlFor="description">Description</Label>
                       <Textarea
                         id="description"
@@ -111,7 +116,7 @@ const AddWallpaper = () => {
                         placeholder="Enter description of wallpaper for SEO"
                         className="max-w-sm bg-[#18181B] border-[216 34% 17%] focus-visible:ring-offset-0"
                       />
-                    </div>
+                    </div> */}
                     <div className="flex flex-col space-y-1.5">
                       <Label htmlFor="category">Choose Device</Label>
                       <Select

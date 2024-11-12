@@ -49,7 +49,7 @@ const Dashboard = () => {
         <img
           src={`${process.env.REACT_APP_API_URL}${row.original.url}`}
           alt="Wallpaper"
-          className="w-[75px] h-[75px] object-cover rounded"
+          className="w-[100px] h-[100px] object-cover rounded"
         />
       ),
     },
@@ -57,10 +57,10 @@ const Dashboard = () => {
       accessorKey: "title",
       header: "Title",
     },
-    {
-      accessorKey: "description",
-      header: "Description",
-    },
+    // {
+    //   accessorKey: "description",
+    //   header: "Description",
+    // },
     {
       accessorKey: "category",
       header: "Category",

@@ -59,67 +59,83 @@ const storage = multer.diskStorage({
   },
 });
 
+
 const upload = multer({ storage: storage });
 
 // Upload wallpaper with category and store metadata in MySQL
 app.post(
-  "/api/wallpapers/upload",
-  upload.single("wallpaperImage"),
+  "/api/wallpapers/upload-multiple",
+  upload.array("wallpaperImages", 20), // Limit the number of files to 10 or adjust as needed
   async (req, res) => {
-    const { title, description, category } = req.body; // Include category in the request
-    const originalImageUrl = `/uploads/${req.file.filename}`;
-    const thumbnailFilename = `thumbnail-${Date.now()}.webp`;
-    const thumbnailUrl = `/uploads/${thumbnailFilename}`;
+    const { title, description, category } = req.body;
+    const uploadedFiles = req.files; // Access all uploaded files
+
+    if (!uploadedFiles || uploadedFiles.length === 0) {
+      return res.status(400).json({ error: "No files uploaded" });
+    }
 
     try {
-      // Set width based on category
-      let width;
-      switch (category) {
-        case "Phone":
-          width = 250; // Width for phone category
-          break;
-        case "Desktop":
-          width = 800; // Width for desktop category
-          break;
-        case "Tablet":
-          width = 500; // Width for tablet category
-          break;
-        default:
-          width = 250; // Default width if no category is specified
-      }
-      // Create a compressed thumbnail
-      await sharp(req.file.path)
-        .resize({ width })
-        .webp({ quality: 100 })
-        .toFile(path.join(__dirname, "uploads", thumbnailFilename));
+      // Array to hold results for each file uploaded
+      const uploadResults = [];
 
-      // Store original and thumbnail URLs along with the category in MySQL
-      const query =
-        "INSERT INTO wallpapers (title, url, description, thumbnailUrl, category, isNew) VALUES (?, ?, ?, ?, ?, ?)";
-      connection.query(
-        query,
-        [title, originalImageUrl, description, thumbnailUrl, category, true], // Set isNew to true
-        (err, result) => {
-          if (err) {
-            console.error("Error inserting wallpaper into MySQL:", err);
-            return res
-              .status(500)
-              .json({ error: "Failed to upload wallpaper" });
-          }
-          res.json({
-            message: "Wallpaper and thumbnail uploaded successfully",
-            id: result.insertId,
-            thumbnailUrl,
-            originalImageUrl,
-          });
+      for (const file of uploadedFiles) {
+        const originalImageUrl = `/uploads/${file.filename}`;
+        const thumbnailFilename = `thumbnail-${Date.now()}-${file.filename}.webp`;
+        const thumbnailUrl = `/uploads/${thumbnailFilename}`;
+
+        // Set width based on category
+        let width;
+        switch (category) {
+          case "Phone":
+            width = 250; // Width for phone category
+            break;
+          case "Desktop":
+            width = 800; // Width for desktop category
+            break;
+          case "Tablet":
+            width = 500; // Width for tablet category
+            break;
+          default:
+            width = 250; // Default width if no category is specified
         }
-      );
+
+        // Create a compressed thumbnail for each file
+        await sharp(file.path)
+          .resize({ width })
+          .webp({ quality: 100 })
+          .toFile(path.join(__dirname, "uploads", thumbnailFilename));
+
+        // Store original and thumbnail URLs along with the category in MySQL
+        const query =
+          "INSERT INTO wallpapers (title, url, description, thumbnailUrl, category, isNew) VALUES (?, ?, ?, ?, ?, ?)";
+        const [result] = await connection.promise().query(query, [
+          title,
+          originalImageUrl,
+          description,
+          thumbnailUrl,
+          category,
+          true, // Set isNew to true
+        ]);
+
+        uploadResults.push({
+          id: result.insertId,
+          message: "Wallpaper and thumbnail uploaded successfully",
+          originalImageUrl,
+          thumbnailUrl,
+        });
+      }
+
+      res.json({
+        message: "Wallpapers uploaded successfully",
+        files: uploadResults,
+      });
     } catch (error) {
-      console.error("Error creating thumbnail:", error);
-      res.status(500).json({ error: "Failed to create thumbnail" });
+      console.error("Error creating thumbnails or uploading:", error);
+      res.status(500).json({ error: "Failed to upload wallpapers" });
     }
   }
 );
+
 
 // app.post(
 //   "/api/wallpapers/upload",
