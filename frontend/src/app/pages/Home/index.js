@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import Layout from "../../customComponents/layout/Layout";
 import { Button } from "../../../components/ui/button";
-import { Download, Info, Eye } from "lucide-react";
+import { Download, Info, Eye, Share2 } from "lucide-react";
 import {
   Dialog,
   DialogContent,
@@ -30,6 +30,26 @@ const HomePage = () => {
         setLoading(false);
       });
   }, []);
+
+  const handleShare = async (wallpaper) => {
+    const shareMessage = `Check out this amazing wallpaper: ${wallpaper.title}!`;
+    // const shareUrl = `${process.env.REACT_APP_API_URL}${wallpaper.url}`;
+    const thumbnailUrl = `${process.env.REACT_APP_API_URL}${wallpaper.thumbnailUrl}`;
+
+    if (navigator.share) {
+      try {
+        await navigator.share({
+          title: wallpaper.title,
+          text: shareMessage,
+          url: thumbnailUrl, // Primary link to the wallpaper page or download URL
+        });
+      } catch (error) {
+        console.error("Error sharing:", error);
+      }
+    } else {
+      alert("Sharing is not supported on this device.");
+    }
+  };
 
   if (loading) {
     return (
@@ -83,6 +103,12 @@ const HomePage = () => {
                   >
                     <Download className="w-5 h-5" />
                   </a>
+                  <button
+                    onClick={() => handleShare(wallpaper)}
+                    className="bg-white rounded-full text-[15px] flex items-center gap-2 text-black px-2 py-2 transition-transform duration-500 ease-in-out transform group-hover:scale-110 hover:bg-white/[90%] absolute bottom-5 left-5"
+                  >
+                    <Share2 className="w-5 h-5" />
+                  </button>
                 </div>
               </div>
             ))}
