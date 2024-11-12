@@ -50,7 +50,7 @@ app.use(express.json()); // For parsing application/json
 
 // Multer storage configuration
 const storage = multer.diskStorage({
-  destination: "./uploads",
+  destination: "../../frontend/public/uploads",
   filename: (req, file, cb) => {
     cb(
       null,

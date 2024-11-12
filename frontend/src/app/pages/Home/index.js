@@ -34,7 +34,7 @@ const HomePage = () => {
   const handleShare = async (wallpaper) => {
     const shareMessage = `Check out this amazing wallpaper: ${wallpaper.title}!`;
     // const shareUrl = `${process.env.REACT_APP_API_URL}${wallpaper.url}`;
-    const thumbnailUrl = `${process.env.REACT_APP_API_URL}${wallpaper.thumbnailUrl}`;
+    const thumbnailUrl = `${process.env.SHARE_APP_API_URL}${wallpaper.thumbnailUrl}`;
 
     if (navigator.share) {
       try {
