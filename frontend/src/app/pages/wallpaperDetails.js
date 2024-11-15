@@ -21,6 +21,41 @@ import { Button } from "../../components/ui/button";
 import { ArrowLeft, Info, Eye, Share2, Download } from "lucide-react";
 
 const WallpaperDetails = ({ isOpen, onClose, wallpaper }) => {
+  const [downloadCount, setDownloadCount] = useState(0);
+
+  // Fetch wallpaper details, including the downloadCount
+  useEffect(() => {
+    const fetchWallpaperDetails = async () => {
+      if (wallpaper?.id) {
+        try {
+          const response = await fetch(
+            `${process.env.REACT_APP_API_URL}/api/wallpapers/${wallpaper.id}`
+          );
+          const data = await response.json();
+          setDownloadCount(data.downloadCount || 0); // Update the download count
+        } catch (error) {
+          console.error("Error fetching wallpaper details:", error);
+        }
+      }
+    };
+
+    fetchWallpaperDetails();
+  }, [wallpaper]);
+
+  const handleDownload = async () => {
+    try {
+      await fetch(
+        `${process.env.REACT_APP_API_URL}/api/wallpapers/download/${wallpaper.id}/increment`,
+        {
+          method: "POST",
+        }
+      );
+      setDownloadCount((prev) => prev + 1); // Optimistically update the count
+    } catch (error) {
+      console.error("Error incrementing download count:", error);
+    }
+  };
+
   if (!wallpaper) return null;
 
   return (
@@ -30,26 +65,29 @@ const WallpaperDetails = ({ isOpen, onClose, wallpaper }) => {
           <DialogHeader>
             {/* <DialogTitle>{wallpaper.title}</DialogTitle> */}
             <DialogDescription>
+              <p className="w-full text-center text-[#FFF100] mb-2">
+                {downloadCount} Downloads ✨
+              </p>
               <div className="flex items-center w-full justify-center relative">
                 <img
                   src="iPhone_Frame.png"
                   alt="iPhone Frame"
-                  className="h-[600px]"
+                  className="h-[550px]"
                 />
                 <img
                   src="time_iPhone.png"
                   alt="Dinamy Island"
-                  className="absolute w-[95%] z-10 top-5"
+                  className="absolute w-[85%] z-10 top-4 left-5"
                 />
                 <img
                   src="Bottom.png"
                   alt="Dinamy Island"
-                  className="absolute w-[95%] z-10 bottom-5"
+                  className="absolute w-[85%] z-10 bottom-4 left-6"
                 />
                 <img
                   src={`${process.env.REACT_APP_API_URL}${wallpaper.thumbnailUrl}`}
                   alt={wallpaper.title}
-                  className="object-cover w-[264px] h-[574px] rounded-[31px] transition-transform duration-500 ease-in-out transform group-hover:scale-105 absolute"
+                  className="object-cover w-[244px] h-[525px] rounded-[31px] transition-transform duration-500 ease-in-out transform group-hover:scale-105 absolute"
                 />
               </div>
               <a
@@ -58,6 +96,7 @@ const WallpaperDetails = ({ isOpen, onClose, wallpaper }) => {
                   process.env.REACT_APP_API_URL
                 }/api/wallpapers/download/${wallpaper.url.split("/").pop()}`} // Get the filename from wallpaper URL
                 download // Just adding this as a safeguard to force the download
+                onClick={handleDownload}
               >
                 <Download className="w-5 h-5" /> Download Free
               </a>

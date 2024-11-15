@@ -251,7 +251,7 @@ app.get("/api/wallpapers/category/:category", async (req, res) => {
 app.get("/api/wallpapers", async (req, res) => {
   try {
     const [wallpapers] = await connection.promise().query(`
-      SELECT w.*, GROUP_CONCAT(t.name) AS tags
+      SELECT w.*, GROUP_CONCAT(t.name) AS tags, w.downloadCount
       FROM wallpapers AS w
       LEFT JOIN wallpaper_tags AS wt ON w.id = wt.wallpaper_id
       LEFT JOIN tags AS t ON wt.tag_id = t.id
@@ -327,6 +327,36 @@ app.get("/api/wallpapers/download/:filename", (req, res) => {
       res.status(500).send("Could not download the file.");
     }
   });
+});
+
+app.get("/api/wallpapers/:id", async (req, res) => {
+  const { id } = req.params;
+  try {
+    const [results] = await connection
+      .promise()
+      .query("SELECT * FROM wallpapers WHERE id = ?", [id]);
+    if (results.length > 0) {
+      res.json(results[0]);
+    } else {
+      res.status(404).json({ error: "Wallpaper not found" });
+    }
+  } catch (error) {
+    console.error("Error fetching wallpaper details:", error);
+    res.status(500).json({ error: "Failed to fetch wallpaper details" });
+  }
+});
+
+app.post("/api/wallpapers/download/:id/increment", async (req, res) => {
+  const { id } = req.params;
+  try {
+    const query =
+      "UPDATE wallpapers SET downloadCount = downloadCount + 1 WHERE id = ?";
+    await connection.promise().query(query, [id]);
+    res.status(200).send({ success: true });
+  } catch (error) {
+    console.error("Error incrementing download count:", error);
+    res.status(500).send({ success: false });
+  }
 });
 
 // Middleware to handle errors globally

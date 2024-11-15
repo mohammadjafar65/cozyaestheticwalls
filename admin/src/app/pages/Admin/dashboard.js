@@ -104,6 +104,13 @@ const Dashboard = () => {
         row.original.tags ? row.original.tags.join(", ") : "No Tags",
     },
     {
+      accessorKey: "downloadCount",
+      header: "Downloads",
+      cell: ({ row }) => (
+        <div>{row.original.downloadCount || 0}</div> // Display the download count
+      ),
+    },
+    {
       id: "actions",
       header: "Actions",
       cell: ({ row }) => (
@@ -189,7 +196,11 @@ const Dashboard = () => {
   });
 
   if (loading) {
-    return <p className="w-full h-[100vh] flex items-center justify-center">Loading wallpapers...</p>;
+    return (
+      <p className="w-full h-[100vh] flex items-center justify-center">
+        Loading wallpapers...
+      </p>
+    );
   }
 
   return (

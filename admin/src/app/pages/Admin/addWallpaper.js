@@ -117,11 +117,11 @@ const AddWallpaper = () => {
           <Plus /> Add Wallpaper
         </Button>
       </DialogTrigger>
-      <DialogContent className="bg-transparent border-none">
+      <DialogContent className="bg-transparent border-none min-[320px]:w-full">
         <DialogHeader>
           {/* <DialogTitle>Are you absolutely sure?</DialogTitle> */}
           <DialogDescription>
-            <Card className="w-[450px] bg-[#18181B] border-[216 34% 17%]">
+            <Card className="w-[450px] min-[320px]:w-full bg-[#18181B] border-[216 34% 17%]">
               <CardHeader>
                 <CardTitle className="text-white font-normal">
                   Add New Wallpaper

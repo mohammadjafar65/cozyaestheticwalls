@@ -40,24 +40,28 @@ const items = [
   // },
 ];
 
-export function AppSidebar({ wallpapers, setFilteredWallpapers, setActiveTag }) {
+export function AppSidebar({
+  wallpapers,
+  setFilteredWallpapers,
+  setActiveTag,
+}) {
   const [tags, setTags] = useState([]);
   const [selectedTag, setSelectedTag] = useState("");
 
   useEffect(() => {
-    const fetchTags = async () => {
-      try {
-        const response = await fetch(
-          `${process.env.REACT_APP_API_URL}/api/tags`
-        );
-        const data = await response.json();
-        setTags(data);
-      } catch (error) {
-        console.error("Error fetching tags:", error);
-      }
+    // Calculate tags with their counts
+    const calculateTagsWithCounts = () => {
+      const tagCounts = wallpapers.reduce((acc, wallpaper) => {
+        wallpaper.tags?.forEach((tag) => {
+          acc[tag] = (acc[tag] || 0) + 1;
+        });
+        return acc;
+      }, {});
+      return Object.entries(tagCounts).map(([tag, count]) => ({ tag, count }));
     };
-    fetchTags();
-  }, []);
+
+    setTags(calculateTagsWithCounts());
+  }, [wallpapers]);
 
   useEffect(() => {
     if (selectedTag) {
@@ -118,11 +122,11 @@ export function AppSidebar({ wallpapers, setFilteredWallpapers, setActiveTag }) 
                   onClick={handleShowAllClick}
                   className={!selectedTag ? "bg-blue-500 text-white" : ""}
                 >
-                  <span>All Wallpapers</span>
+                  <span>All Wallpapers ({wallpapers.length})</span>
                 </SidebarMenuButton>
               </SidebarMenuItem>
               {/* Render individual tags */}
-              {tags.map((tag) => (
+              {tags.map(({ tag, count }) => (
                 <SidebarMenuItem key={tag}>
                   <SidebarMenuButton
                     onClick={() => handleTagClick(tag)}
@@ -130,7 +134,7 @@ export function AppSidebar({ wallpapers, setFilteredWallpapers, setActiveTag }) 
                       selectedTag === tag ? "bg-blue-500 text-white" : ""
                     }
                   >
-                    <span>{tag}</span>
+                    <span>{tag} ({count})</span>
                   </SidebarMenuButton>
                 </SidebarMenuItem>
               ))}

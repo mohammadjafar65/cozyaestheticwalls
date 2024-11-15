@@ -60,7 +60,7 @@ const HomePage = () => {
         setFilteredWallpapers={setFilteredWallpapers}
       >
         <div className="py-6 px-2">
-          <div className="grid gap-y-4 grid-cols-2 sm:grid-cols-3 md:grid-cols-3 lg:grid-cols-6 justify-items-center">
+          <div className="grid gap-y-4 grid-cols-2 sm:grid-cols-3 min-[1024px]:grid-cols-3 min-[1380px]:grid-cols-6 min-[2560px]:grid-cols-8 justify-items-center">
             {filteredWallpapers.map((wallpaper) => (
               <div
                 onClick={() => handleWallpaperClick(wallpaper)} // Open drawer with selected wallpaper data
@@ -71,7 +71,7 @@ const HomePage = () => {
                   <img
                     src="iPhone_Frame.png"
                     alt="iPhone Frame"
-                    className="h-[500px]"
+                    className="h-[500px] max-[425px]:h-[400px] max-[375px]:h-[350px]"
                   />
                   <img
                     src="time_iPhone.png"
@@ -86,7 +86,7 @@ const HomePage = () => {
                   <img
                     src={`${process.env.REACT_APP_API_URL}${wallpaper.thumbnailUrl}`}
                     alt={wallpaper.title}
-                    className="object-cover w-[90%] h-[96.2%] rounded-[26px] absolute top-2.5"
+                    className="object-cover w-[90%] h-[96.2%] rounded-[26px] absolute top-2.5 max-[375px]:rounded-[18px] max-[375px]:top-2 max-[375px]:h-[96%] max-[425px]:top-2 max-[425px]:rounded-[22px]"
                   />
                 </div>
                 <div className="absolute top-0 z-10">

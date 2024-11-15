@@ -7,7 +7,7 @@ const TopBar = ({ activeTag }) => {
   return (
     <>
       <div className="w-full sticky top-0 z-20">
-        <div className="flex items-center gap-5 backdrop-blur-md bg-[#18181B]/80 py-4 px-8 border-b border-[216 34% 17%]">
+        <div className="flex items-center gap-3 backdrop-blur-md bg-[#18181B]/80 py-4 px-8 border-b border-[216 34% 17%] pl-4">
           <SidebarTrigger className="lg:hidden" />
           <h3 className="font-bold text-[#EEEEEE]">
             {activeTag && `${activeTag}`}
