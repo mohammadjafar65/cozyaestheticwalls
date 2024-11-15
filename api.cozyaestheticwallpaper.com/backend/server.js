@@ -222,7 +222,8 @@ setInterval(removeNewTag, 60000);
 app.get("/api/wallpapers/category/:category", async (req, res) => {
   const { category } = req.params;
   try {
-    const [wallpapers] = await connection.promise().query(`
+    const [wallpapers] = await connection.promise().query(
+      `
       SELECT w.*, GROUP_CONCAT(t.name) AS tags
       FROM wallpapers AS w
       LEFT JOIN wallpaper_tags AS wt ON w.id = wt.wallpaper_id
@@ -230,7 +231,9 @@ app.get("/api/wallpapers/category/:category", async (req, res) => {
       WHERE w.category = ?
       GROUP BY w.id
       ORDER BY w.createdAt DESC
-    `, [category]);
+    `,
+      [category]
+    );
 
     const wallpapersWithTags = wallpapers.map((wallpaper) => ({
       ...wallpaper,
@@ -268,7 +271,6 @@ app.get("/api/wallpapers", async (req, res) => {
   }
 });
 
-
 app.delete("/api/wallpapers/:id", (req, res) => {
   const { id } = req.params;
 
@@ -293,9 +295,23 @@ app.delete("/api/wallpapers/:id", (req, res) => {
 
 app.get("/api/wallpapers/download/:filename", (req, res) => {
   const { filename } = req.params;
-  const filePath = path.join(__dirname, "uploads", filename);
 
-  // Update isNew status in database for downloaded wallpaper
+  // Adjust path based on actual upload directory
+  const filePath = path.join(
+    __dirname,
+    "../../frontend/public/uploads",
+    filename
+  );
+
+  console.log("File path:", filePath); // Debug file path
+
+  // Check if file exists
+  if (!fs.existsSync(filePath)) {
+    console.error("File not found:", filePath);
+    return res.status(404).send("File not found.");
+  }
+
+  // Update isNew status in the database
   const updateQuery = "UPDATE wallpapers SET isNew = FALSE WHERE url = ?";
   connection.query(updateQuery, [`/uploads/${filename}`], (err) => {
     if (err) {
@@ -303,6 +319,8 @@ app.get("/api/wallpapers/download/:filename", (req, res) => {
     }
   });
 
+  // Serve the file
+  res.setHeader("Cache-Control", "no-cache, no-store, must-revalidate");
   res.download(filePath, filename, (err) => {
     if (err) {
       console.error("Error downloading the file:", err);

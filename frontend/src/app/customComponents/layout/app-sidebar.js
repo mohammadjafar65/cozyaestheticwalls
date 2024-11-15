@@ -40,7 +40,7 @@ const items = [
   // },
 ];
 
-export function AppSidebar({ wallpapers, setFilteredWallpapers }) {
+export function AppSidebar({ wallpapers, setFilteredWallpapers, setActiveTag }) {
   const [tags, setTags] = useState([]);
   const [selectedTag, setSelectedTag] = useState("");
 
@@ -65,10 +65,12 @@ export function AppSidebar({ wallpapers, setFilteredWallpapers }) {
         (wallpaper) => wallpaper.tags && wallpaper.tags.includes(selectedTag)
       );
       setFilteredWallpapers(filtered);
+      setActiveTag(selectedTag);
     } else {
       setFilteredWallpapers(wallpapers); // Show all wallpapers if no tag is selected
+      setActiveTag("All Wallpapers");
     }
-  }, [selectedTag, wallpapers, setFilteredWallpapers]);
+  }, [selectedTag, wallpapers, setFilteredWallpapers, setActiveTag]);
 
   const handleTagClick = (tag) => {
     setSelectedTag(tag); // Set the selected tag

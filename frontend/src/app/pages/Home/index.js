@@ -11,20 +11,7 @@ const HomePage = () => {
   const [loading, setLoading] = useState(true);
   const [selectedWallpaper, setSelectedWallpaper] = useState(null); // State to hold selected wallpaper
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
-
-  // useEffect(() => {
-  //   axios
-  //     .get(`${process.env.REACT_APP_API_URL}/api/wallpapers`)
-  //     .then((response) => {
-  //       setWallpapers(response.data);
-  //       setFilteredWallpapers(response.data); // Initially display all wallpapers
-  //       setLoading(false);
-  //     })
-  //     .catch((error) => {
-  //       console.error("Error fetching wallpapers:", error);
-  //       setLoading(false);
-  //     });
-  // }, []);
+  const [activeTag, setActiveTag] = useState("All Wallpapers");
 
   useEffect(() => {
     const fetchWallpapers = async () => {
@@ -72,7 +59,6 @@ const HomePage = () => {
         filteredWallpapers={filteredWallpapers}
         setFilteredWallpapers={setFilteredWallpapers}
       >
-        <TopBar />
         <div className="py-6 px-2">
           <div className="grid gap-y-4 grid-cols-2 sm:grid-cols-3 md:grid-cols-3 lg:grid-cols-6 justify-items-center">
             {filteredWallpapers.map((wallpaper) => (

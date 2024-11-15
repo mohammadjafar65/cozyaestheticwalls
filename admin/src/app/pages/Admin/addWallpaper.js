@@ -43,6 +43,13 @@ const AddWallpaper = () => {
     "Vintage",
     "Dark",
     "Bright",
+    "Aesthetic",
+    "Gradient",
+    "Pastel",
+    "Winter",
+    "Anime",
+    "Cozy",
+    
   ]);
 
   const handleAddTag = () => {

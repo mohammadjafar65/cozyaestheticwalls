@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { useLocation } from "react-router-dom";
 import BottomMenu from "./BottomMenu";
 import {
@@ -6,6 +6,7 @@ import {
   SidebarTrigger,
 } from "../../../components/ui/sidebar";
 import { AppSidebar } from "../layout/app-sidebar";
+import TopBar from "../../customComponents/layout/TopBar";
 
 export default function Layout({
   children,
@@ -13,13 +14,18 @@ export default function Layout({
   filteredWallpapers,
   setFilteredWallpapers,
 }) {
+  const [activeTag, setActiveTag] = useState("All Wallpapers");
   return (
     <SidebarProvider>
       <AppSidebar
         wallpapers={wallpapers}
         setFilteredWallpapers={setFilteredWallpapers}
+        setActiveTag={setActiveTag}
       />
-      <main className="w-full">{children}</main>
+      <main className="w-full">
+        <TopBar activeTag={activeTag} />
+        {children}
+      </main>
     </SidebarProvider>
   );
 }
