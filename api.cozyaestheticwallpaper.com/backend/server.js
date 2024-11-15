@@ -59,44 +59,45 @@ const storage = multer.diskStorage({
   },
 });
 
-
 const upload = multer({ storage: storage });
 
 // Upload wallpaper with category and store metadata in MySQL
+// Upload wallpaper with category, tags, and store metadata in MySQL
 app.post(
   "/api/wallpapers/upload-multiple",
-  upload.array("wallpaperImages", 20), // Limit the number of files to 10 or adjust as needed
+  upload.array("wallpaperImages", 20),
   async (req, res) => {
-    const { title, description, category } = req.body;
-    const uploadedFiles = req.files; // Access all uploaded files
+    const { title, description, category, tags } = req.body;
+    const uploadedFiles = req.files;
 
     if (!uploadedFiles || uploadedFiles.length === 0) {
       return res.status(400).json({ error: "No files uploaded" });
     }
 
     try {
-      // Array to hold results for each file uploaded
+      const parsedTags = JSON.parse(tags); // Parse tags from request (they’re sent as JSON)
       const uploadResults = [];
 
       for (const file of uploadedFiles) {
         const originalImageUrl = `/uploads/${file.filename}`;
-        const thumbnailFilename = `thumbnail-${Date.now()}-${file.filename}.webp`;
+        const thumbnailFilename = `thumbnail-${Date.now()}-${
+          file.filename
+        }.webp`;
         const thumbnailUrl = `/uploads/${thumbnailFilename}`;
 
-        // Set width based on category
         let width;
         switch (category) {
           case "Phone":
-            width = 250; // Width for phone category
+            width = 250;
             break;
           case "Desktop":
-            width = 800; // Width for desktop category
+            width = 800;
             break;
           case "Tablet":
-            width = 500; // Width for tablet category
+            width = 500;
             break;
           default:
-            width = 250; // Default width if no category is specified
+            width = 250;
         }
 
         // Create a compressed thumbnail for each file
@@ -105,20 +106,53 @@ app.post(
           .webp({ quality: 100 })
           .toFile(path.join(__dirname, "uploads", thumbnailFilename));
 
-        // Store original and thumbnail URLs along with the category in MySQL
+        // Insert wallpaper details into the wallpapers table
         const query =
-          "INSERT INTO wallpapers (title, url, description, thumbnailUrl, category, isNew) VALUES (?, ?, ?, ?, ?, ?)";
-        const [result] = await connection.promise().query(query, [
-          title,
-          originalImageUrl,
-          description,
-          thumbnailUrl,
-          category,
-          true, // Set isNew to true
-        ]);
+          "INSERT INTO wallpapers (title, url, description, thumbnailUrl, category, isNew, createdAt) VALUES (?, ?, ?, ?, ?, ?, ?)";
+        const [result] = await connection
+          .promise()
+          .query(query, [
+            title,
+            originalImageUrl,
+            description,
+            thumbnailUrl,
+            category,
+            true,
+            new Date(),
+          ]);
+
+        const wallpaperId = result.insertId;
+
+        // Insert or retrieve each tag and create an association in wallpaper_tags table
+        for (const tagName of parsedTags) {
+          let tagId;
+
+          // Check if tag already exists
+          const [existingTag] = await connection
+            .promise()
+            .query("SELECT id FROM tags WHERE name = ?", [tagName]);
+
+          if (existingTag.length > 0) {
+            tagId = existingTag[0].id;
+          } else {
+            // Insert new tag into tags table if it doesn't exist
+            const [newTagResult] = await connection
+              .promise()
+              .query("INSERT INTO tags (name) VALUES (?)", [tagName]);
+            tagId = newTagResult.insertId;
+          }
+
+          // Associate the tag with the wallpaper
+          await connection
+            .promise()
+            .query(
+              "INSERT INTO wallpaper_tags (wallpaper_id, tag_id) VALUES (?, ?)",
+              [wallpaperId, tagId]
+            );
+        }
 
         uploadResults.push({
-          id: result.insertId,
+          id: wallpaperId,
           message: "Wallpaper and thumbnail uploaded successfully",
           originalImageUrl,
           thumbnailUrl,
@@ -135,7 +169,6 @@ app.post(
     }
   }
 );
-
 
 // app.post(
 //   "/api/wallpapers/upload",
@@ -159,8 +192,22 @@ app.post(
 //   }
 // );
 
+app.get("/api/tags", async (req, res) => {
+  try {
+    const [results] = await connection
+      .promise()
+      .query("SELECT DISTINCT name FROM tags");
+    const tags = results.map((row) => row.name);
+    res.json(tags);
+  } catch (error) {
+    console.error("Error fetching tags:", error);
+    res.status(500).json({ error: "Failed to fetch tags" });
+  }
+});
+
 function removeNewTag() {
-  const query = "UPDATE wallpapers SET isNew = FALSE WHERE isNew = TRUE AND createdAt <= NOW() - INTERVAL 10 MINUTE";
+  const query =
+    "UPDATE wallpapers SET isNew = FALSE WHERE isNew = TRUE AND createdAt <= NOW() - INTERVAL 10 MINUTE";
   connection.query(query, (err, result) => {
     if (err) {
       console.error("Error updating isNew status:", err);
@@ -172,30 +219,55 @@ function removeNewTag() {
 setInterval(removeNewTag, 60000);
 
 // Fetch wallpapers by category
-app.get("/api/wallpapers/category/:category", (req, res) => {
+app.get("/api/wallpapers/category/:category", async (req, res) => {
   const { category } = req.params;
-  const query =
-    "SELECT * FROM wallpapers WHERE category = ? ORDER BY createdAt DESC";
-  connection.query(query, [category], (err, results) => {
-    if (err) {
-      console.error("Error fetching wallpapers by category from MySQL:", err);
-      return res.status(500).json({ error: "Failed to fetch wallpapers" });
-    }
-    res.json(results);
-  });
+  try {
+    const [wallpapers] = await connection.promise().query(`
+      SELECT w.*, GROUP_CONCAT(t.name) AS tags
+      FROM wallpapers AS w
+      LEFT JOIN wallpaper_tags AS wt ON w.id = wt.wallpaper_id
+      LEFT JOIN tags AS t ON wt.tag_id = t.id
+      WHERE w.category = ?
+      GROUP BY w.id
+      ORDER BY w.createdAt DESC
+    `, [category]);
+
+    const wallpapersWithTags = wallpapers.map((wallpaper) => ({
+      ...wallpaper,
+      tags: wallpaper.tags ? wallpaper.tags.split(",") : [],
+    }));
+
+    res.json(wallpapersWithTags);
+  } catch (error) {
+    console.error("Error fetching wallpapers by category:", error);
+    res.status(500).json({ error: "Failed to fetch wallpapers" });
+  }
 });
 
 // Fetch all wallpapers
-app.get("/api/wallpapers", (req, res) => {
-  const query = "SELECT * FROM wallpapers";
-  connection.query(query, (err, results) => {
-    if (err) {
-      console.error("Error fetching wallpapers from MySQL:", err);
-      return res.status(500).json({ error: "Failed to fetch wallpapers" });
-    }
-    res.json(results);
-  });
+app.get("/api/wallpapers", async (req, res) => {
+  try {
+    const [wallpapers] = await connection.promise().query(`
+      SELECT w.*, GROUP_CONCAT(t.name) AS tags
+      FROM wallpapers AS w
+      LEFT JOIN wallpaper_tags AS wt ON w.id = wt.wallpaper_id
+      LEFT JOIN tags AS t ON wt.tag_id = t.id
+      GROUP BY w.id
+      ORDER BY w.createdAt DESC
+    `);
+
+    const wallpapersWithTags = wallpapers.map((wallpaper) => ({
+      ...wallpaper,
+      tags: wallpaper.tags ? wallpaper.tags.split(",") : [],
+    }));
+
+    res.json(wallpapersWithTags);
+  } catch (error) {
+    console.error("Error fetching wallpapers:", error);
+    res.status(500).json({ error: "Failed to fetch wallpapers" });
+  }
 });
+
 
 app.delete("/api/wallpapers/:id", (req, res) => {
   const { id } = req.params;
@@ -238,7 +310,6 @@ app.get("/api/wallpapers/download/:filename", (req, res) => {
     }
   });
 });
-
 
 // Middleware to handle errors globally
 app.use((err, req, res, next) => {

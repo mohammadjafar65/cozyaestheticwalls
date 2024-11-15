@@ -1,3 +1,4 @@
+import { useState, useEffect } from "react";
 import {
   Calendar,
   Monitor,
@@ -27,31 +28,68 @@ const items = [
     url: "/",
     icon: Smartphone,
   },
-  {
-    title: "Desktop",
-    url: "/desktop",
-    icon: Monitor,
-  },
-  {
-    title: "Tablet",
-    url: "/tablet",
-    icon: Tablet,
-  },
+  // {
+  //   title: "Desktop",
+  //   url: "/desktop",
+  //   icon: Monitor,
+  // },
+  // {
+  //   title: "Tablet",
+  //   url: "/tablet",
+  //   icon: Tablet,
+  // },
 ];
 
-export function AppSidebar() {
+export function AppSidebar({ wallpapers, setFilteredWallpapers }) {
+  const [tags, setTags] = useState([]);
+  const [selectedTag, setSelectedTag] = useState("");
+
+  useEffect(() => {
+    const fetchTags = async () => {
+      try {
+        const response = await fetch(
+          `${process.env.REACT_APP_API_URL}/api/tags`
+        );
+        const data = await response.json();
+        setTags(data);
+      } catch (error) {
+        console.error("Error fetching tags:", error);
+      }
+    };
+    fetchTags();
+  }, []);
+
+  useEffect(() => {
+    if (selectedTag) {
+      const filtered = wallpapers.filter(
+        (wallpaper) => wallpaper.tags && wallpaper.tags.includes(selectedTag)
+      );
+      setFilteredWallpapers(filtered);
+    } else {
+      setFilteredWallpapers(wallpapers); // Show all wallpapers if no tag is selected
+    }
+  }, [selectedTag, wallpapers, setFilteredWallpapers]);
+
+  const handleTagClick = (tag) => {
+    setSelectedTag(tag); // Set the selected tag
+  };
+
+  const handleShowAllClick = () => {
+    setSelectedTag(""); // Clear the selected tag to show all wallpapers
+  };
+
   return (
     <Sidebar>
       <SidebarContent className="p-4">
-        <div className="flex flex-col items-center gap-5 bg-[#F39F5A] py-4 rounded-[10px]">
+        <div className="flex flex-col items-center gap-5 border border-[216 34% 17%] py-4 rounded-[10px]">
           <img
             src="../logo.png"
-            className="w-6"
+            className="w-9"
             alt="Cozy Aesthetic Wallpaper"
           />
           <h1>Cozy Aesthetic Wallpaper</h1>
         </div>
-        <SidebarGroup>
+        {/* <SidebarGroup>
           <SidebarGroupLabel className="mb-1">Device</SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
@@ -62,6 +100,35 @@ export function AppSidebar() {
                       <item.icon />
                       <span>{item.title}</span>
                     </a>
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
+              ))}
+            </SidebarMenu>
+          </SidebarGroupContent>
+        </SidebarGroup> */}
+        <SidebarGroup>
+          <SidebarGroupLabel className="mb-1">Category</SidebarGroupLabel>
+          <SidebarGroupContent>
+            <SidebarMenu>
+              {/* Show All Wallpapers option */}
+              <SidebarMenuItem>
+                <SidebarMenuButton
+                  onClick={handleShowAllClick}
+                  className={!selectedTag ? "bg-blue-500 text-white" : ""}
+                >
+                  <span>All Wallpapers</span>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
+              {/* Render individual tags */}
+              {tags.map((tag) => (
+                <SidebarMenuItem key={tag}>
+                  <SidebarMenuButton
+                    onClick={() => handleTagClick(tag)}
+                    className={
+                      selectedTag === tag ? "bg-blue-500 text-white" : ""
+                    }
+                  >
+                    <span>{tag}</span>
                   </SidebarMenuButton>
                 </SidebarMenuItem>
               ))}

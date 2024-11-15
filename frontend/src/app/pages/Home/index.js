@@ -1,54 +1,60 @@
 import React, { useEffect, useState } from "react";
 import Layout from "../../customComponents/layout/Layout";
+import WallpaperDetails from "../wallpaperDetails";
 import { Button } from "../../../components/ui/button";
-import { Download, Info, Eye, Share2 } from "lucide-react";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "../../../components/ui/dialog";
 import axios from "axios"; // Import axios for API requests
 import TopBar from "../../customComponents/layout/TopBar";
 
 const HomePage = () => {
-  const [wallpapers, setWallpapers] = useState([]);
-
+  const [wallpapers, setWallpapers] = useState([]); // All wallpapers
+  const [filteredWallpapers, setFilteredWallpapers] = useState([]); // Filtered wallpapers
   const [loading, setLoading] = useState(true);
+  const [selectedWallpaper, setSelectedWallpaper] = useState(null); // State to hold selected wallpaper
+  const [isDrawerOpen, setIsDrawerOpen] = useState(false);
+
+  // useEffect(() => {
+  //   axios
+  //     .get(`${process.env.REACT_APP_API_URL}/api/wallpapers`)
+  //     .then((response) => {
+  //       setWallpapers(response.data);
+  //       setFilteredWallpapers(response.data); // Initially display all wallpapers
+  //       setLoading(false);
+  //     })
+  //     .catch((error) => {
+  //       console.error("Error fetching wallpapers:", error);
+  //       setLoading(false);
+  //     });
+  // }, []);
 
   useEffect(() => {
-    axios
-      .get(`${process.env.REACT_APP_API_URL}/api/wallpapers/category/Phone`) // Fetch only Phone category wallpapers
-      .then((response) => {
-        setWallpapers(response.data);
-        setLoading(false); // Stop loading when data is fetched
-      })
-      .catch((error) => {
+    const fetchWallpapers = async () => {
+      try {
+        const response = await axios.get(
+          `${process.env.REACT_APP_API_URL}/api/wallpapers`
+        );
+        const data = response.data;
+
+        // Sort wallpapers by createdAt in descending order in the frontend as a backup
+        const sortedWallpapers = data.sort(
+          (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
+        );
+
+        setWallpapers(sortedWallpapers);
+        setFilteredWallpapers(sortedWallpapers);
+
+        setLoading(false);
+      } catch (error) {
         console.error("Error fetching wallpapers:", error);
         setLoading(false);
-      });
+      }
+    };
+
+    fetchWallpapers();
   }, []);
 
-  const handleShare = async (wallpaper) => {
-    const shareMessage = `Check out this amazing wallpaper: ${wallpaper.title}!`;
-    // const shareUrl = `${process.env.REACT_APP_API_URL}${wallpaper.url}`;
-    const thumbnailUrl = `${process.env.SHARE_APP_API_URL}${wallpaper.thumbnailUrl}`;
-
-    if (navigator.share) {
-      try {
-        await navigator.share({
-          title: wallpaper.title,
-          text: shareMessage,
-          url: thumbnailUrl, // Primary link to the wallpaper page or download URL
-        });
-      } catch (error) {
-        console.error("Error sharing:", error);
-      }
-    } else {
-      alert("Sharing is not supported on this device.");
-    }
+  const handleWallpaperClick = (wallpaper) => {
+    setSelectedWallpaper(wallpaper);
+    setIsDrawerOpen(true);
   };
 
   if (loading) {
@@ -61,59 +67,58 @@ const HomePage = () => {
 
   return (
     <>
-      <Layout>
+      <Layout
+        wallpapers={wallpapers}
+        filteredWallpapers={filteredWallpapers}
+        setFilteredWallpapers={setFilteredWallpapers}
+      >
         <TopBar />
-        <div className="lg:pb-[8%] sm:pb-[10%] min-[320px]:pb-[30%] min-[320px]:px-[20px] px-[20px] py-[20px]">
-          <div className="grid lg:grid-cols-7 md:grid-cols-3 gap-4 min-[320px]:grid-cols-2 justify-items-center p-0">
-            {wallpapers.map((wallpaper) => (
+        <div className="py-6 px-2">
+          <div className="grid gap-y-4 grid-cols-2 sm:grid-cols-3 md:grid-cols-3 lg:grid-cols-6 justify-items-center">
+            {filteredWallpapers.map((wallpaper) => (
               <div
-                className="group lg:w-full lg:h-[350px] min-[320px]:w-full min-[320px]:h-[300px] relative overflow-hidden rounded-[10px] p-0"
-                key={wallpaper._id} // Use unique id for the key
+                onClick={() => handleWallpaperClick(wallpaper)} // Open drawer with selected wallpaper data
+                className="group relative overflow-hidden rounded-lg cursor-pointer shadow-md hover:shadow-lg transition-shadow duration-300"
+                key={wallpaper._id || wallpaper.id}
               >
-                <img
-                  src={`${process.env.REACT_APP_API_URL}${wallpaper.thumbnailUrl}`}
-                  className="object-cover w-[250px] h-[350px] rounded-[10px] transition-transform duration-500 ease-in-out transform group-hover:scale-105"
-                  alt={wallpaper.title}
-                  loading="lazy"
-                />
-                {wallpaper.isNew && <span className="new-tag">New</span>}
-                <div className="absolute top-0 left-0 z-10 flex items-center justify-center w-full bg-gradient-to-t from-black/[.3] to-transparent opacity-0 h-full group-hover:opacity-100 transition-opacity duration-500 ease-in-out rounded-[10px]">
-                  {/* <Dialog>
-                    <DialogTrigger className="absolute top-2 right-2 hover:bg-slate-900/[0.6] p-2 rounded-[50%]">
-                      <Info className="w-5 h-5" />
-                    </DialogTrigger>
-                    <DialogContent className="bg-background border-background">
-                      <DialogHeader>
-                        <DialogTitle>{wallpaper.title}</DialogTitle>
-                        <DialogDescription>
-                          {wallpaper.description}
-                        </DialogDescription>
-                      </DialogHeader>
-                    </DialogContent>
-                  </Dialog> */}
-                  {/* Download button with correct wallpaper URL */}
-                  <a
-                    className="bg-white rounded-full text-[15px] flex items-center gap-2 text-black px-2 py-2 transition-transform duration-500 ease-in-out transform group-hover:scale-110 hover:bg-white/[90%] absolute bottom-5 right-5"
-                    href={`${
-                      process.env.REACT_APP_API_URL
-                    }/api/wallpapers/download/${wallpaper.url
-                      .split("/")
-                      .pop()}`} // Get the filename from wallpaper URL
-                    download // Just adding this as a safeguard to force the download
-                  >
-                    <Download className="w-5 h-5" />
-                  </a>
-                  <button
-                    onClick={() => handleShare(wallpaper)}
-                    className="bg-white rounded-full text-[15px] flex items-center gap-2 text-black px-2 py-2 transition-transform duration-500 ease-in-out transform group-hover:scale-110 hover:bg-white/[90%] absolute bottom-5 left-5"
-                  >
-                    <Share2 className="w-5 h-5" />
-                  </button>
+                <div className="flex items-center justify-center relative">
+                  <img
+                    src="iPhone_Frame.png"
+                    alt="iPhone Frame"
+                    className="h-[500px]"
+                  />
+                  <img
+                    src="time_iPhone.png"
+                    alt="Dinamy Island"
+                    className="absolute w-[95%] z-10 top-5"
+                  />
+                  <img
+                    src="Bottom.png"
+                    alt="Dinamy Island"
+                    className="absolute w-[95%] z-10 bottom-5"
+                  />
+                  <img
+                    src={`${process.env.REACT_APP_API_URL}${wallpaper.thumbnailUrl}`}
+                    alt={wallpaper.title}
+                    className="object-cover w-[90%] h-[96.2%] rounded-[26px] absolute top-2.5"
+                  />
+                </div>
+                <div className="absolute top-0 z-10">
+                  {wallpaper.isNew === 1 && (
+                    <span className="new-tag bg-red-500 text-white px-2 py-1 rounded">
+                      New
+                    </span>
+                  )}
                 </div>
               </div>
             ))}
           </div>
         </div>
+        <WallpaperDetails
+          isOpen={isDrawerOpen}
+          onClose={() => setIsDrawerOpen(false)}
+          wallpaper={selectedWallpaper}
+        />
       </Layout>
     </>
   );

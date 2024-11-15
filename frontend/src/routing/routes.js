@@ -9,8 +9,8 @@ function Routes() {
       <BrowserRouter>
         <Router>
           <Route path="/" element={<HomePage />} />
-          <Route path="/desktop" element={<DesktopPage />} />
-          <Route path="/tablet" element={<TabletPage />} />
+          {/* <Route path="/desktop" element={<DesktopPage />} />
+          <Route path="/tablet" element={<TabletPage />} /> */}
         </Router>
       </BrowserRouter>
     </>

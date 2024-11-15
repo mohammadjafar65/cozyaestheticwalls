@@ -32,10 +32,12 @@ import {
   DropdownMenuTrigger,
 } from "../../../components/ui/dropdown-menu";
 import AddWallpaper from "./addWallpaper";
+import { Checkbox } from "../../../components/ui/checkbox";
 
 const Dashboard = () => {
   const [wallpapers, setWallpapers] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [selectedWallpapers, setSelectedWallpapers] = useState(new Set()); // Track selected wallpapers
   const [sorting, setSorting] = useState([]);
   const [columnFilters, setColumnFilters] = useState([]);
   const [columnVisibility, setColumnVisibility] = useState({});
@@ -43,11 +45,45 @@ const Dashboard = () => {
   // Define columns for the DataTable
   const columns = [
     {
+      accessorKey: "select",
+      header: ({ table }) => (
+        <Checkbox
+          className="h-6 w-6 border-white data-[state=checked]:bg-white data-[state=checked]:text-black"
+          checked={
+            selectedWallpapers.size === wallpapers.length &&
+            wallpapers.length > 0
+          }
+          onCheckedChange={(checked) => {
+            if (checked) {
+              setSelectedWallpapers(new Set(wallpapers.map((w) => w.id)));
+            } else {
+              setSelectedWallpapers(new Set());
+            }
+          }}
+        />
+      ),
+      cell: ({ row }) => (
+        <Checkbox
+          className="h-6 w-6 border-white data-[state=checked]:bg-white data-[state=checked]:text-black"
+          checked={selectedWallpapers.has(row.original.id)}
+          onCheckedChange={(checked) => {
+            const newSelected = new Set(selectedWallpapers);
+            if (checked) {
+              newSelected.add(row.original.id);
+            } else {
+              newSelected.delete(row.original.id);
+            }
+            setSelectedWallpapers(newSelected);
+          }}
+        />
+      ),
+    },
+    {
       accessorKey: "image",
       header: "Image",
       cell: ({ row }) => (
         <img
-          src={`${process.env.REACT_APP_API_URL}${row.original.url}`}
+          src={`${process.env.REACT_APP_API_URL}${row.original.thumbnailUrl}`}
           alt="Wallpaper"
           className="w-[100px] h-[100px] object-cover rounded"
         />
@@ -57,13 +93,15 @@ const Dashboard = () => {
       accessorKey: "title",
       header: "Title",
     },
-    // {
-    //   accessorKey: "description",
-    //   header: "Description",
-    // },
     {
       accessorKey: "category",
       header: "Category",
+    },
+    {
+      accessorKey: "tags",
+      header: "Tags",
+      cell: ({ row }) =>
+        row.original.tags ? row.original.tags.join(", ") : "No Tags",
     },
     {
       id: "actions",
@@ -112,6 +150,31 @@ const Dashboard = () => {
     }
   };
 
+  // Handle bulk delete for selected wallpapers
+  const handleDeleteSelected = async () => {
+    const confirmDelete = window.confirm(
+      "Are you sure you want to delete selected wallpapers?"
+    );
+    if (confirmDelete) {
+      try {
+        const deletePromises = Array.from(selectedWallpapers).map((id) =>
+          axios.delete(`${process.env.REACT_APP_API_URL}/api/wallpapers/${id}`)
+        );
+        await Promise.all(deletePromises);
+        setWallpapers(
+          wallpapers.filter(
+            (wallpaper) => !selectedWallpapers.has(wallpaper.id)
+          )
+        );
+        setSelectedWallpapers(new Set());
+        alert("Selected wallpapers deleted successfully!");
+      } catch (error) {
+        console.error("Failed to delete selected wallpapers:", error);
+        alert("Failed to delete selected wallpapers.");
+      }
+    }
+  };
+
   const table = useReactTable({
     data: wallpapers,
     columns,
@@ -126,7 +189,7 @@ const Dashboard = () => {
   });
 
   if (loading) {
-    return <p>Loading wallpapers...</p>;
+    return <p className="w-full h-[100vh] flex items-center justify-center">Loading wallpapers...</p>;
   }
 
   return (
@@ -136,22 +199,28 @@ const Dashboard = () => {
           <div className="flex items-center gap-5">
             <SidebarTrigger className="" />
           </div>
-          <AddWallpaper/>
-          {/* <a href="/addwallpaper">
-            <Button className="bg-blue-500 text-white">Add Wallpaper</Button>
-          </a> */}
+          <AddWallpaper />
         </div>
         <div className="w-full">
           <div className="flex items-center justify-between py-4 w-full">
             <h1 className="text-[25px]">Dashboard</h1>
-            <Input
-              placeholder="Filter by title..."
-              value={table.getColumn("title")?.getFilterValue() ?? ""}
-              onChange={(e) =>
-                table.getColumn("title")?.setFilterValue(e.target.value)
-              }
-              className="max-w-sm bg-[#18181B] border-[216 34% 17%] focus-visible:ring-offset-0"
-            />
+            <div className="flex items-center gap-5">
+              <Input
+                placeholder="Filter by title..."
+                value={table.getColumn("title")?.getFilterValue() ?? ""}
+                onChange={(e) =>
+                  table.getColumn("title")?.setFilterValue(e.target.value)
+                }
+                className="max-w-sm bg-[#18181B] border-[216 34% 17%] focus-visible:ring-offset-0"
+              />
+              <Button
+                onClick={handleDeleteSelected}
+                className="bg-red-500 text-white"
+                disabled={selectedWallpapers.size === 0}
+              >
+                <Trash2 /> Delete Selected
+              </Button>
+            </div>
           </div>
           <div className="rounded-md border w-full">
             <Table className="w-full">
@@ -202,7 +271,7 @@ const Dashboard = () => {
               </TableBody>
             </Table>
           </div>
-          <div className="flex items-center justify-end space-x-2 py-4">
+          {/* <div className="flex items-center justify-end space-x-2 py-4">
             <Button
               variant="outline"
               size="sm"
@@ -219,7 +288,7 @@ const Dashboard = () => {
             >
               Next
             </Button>
-          </div>
+          </div> */}
         </div>
       </div>
     </Layout>

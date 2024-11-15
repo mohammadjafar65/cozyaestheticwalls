@@ -7,10 +7,18 @@ import {
 } from "../../../components/ui/sidebar";
 import { AppSidebar } from "../layout/app-sidebar";
 
-export default function Layout({ children }) {
+export default function Layout({
+  children,
+  wallpapers,
+  filteredWallpapers,
+  setFilteredWallpapers,
+}) {
   return (
     <SidebarProvider>
-      <AppSidebar />
+      <AppSidebar
+        wallpapers={wallpapers}
+        setFilteredWallpapers={setFilteredWallpapers}
+      />
       <main className="w-full">{children}</main>
     </SidebarProvider>
   );

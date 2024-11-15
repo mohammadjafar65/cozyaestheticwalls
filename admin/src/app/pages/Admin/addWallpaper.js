@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Plus, Trash2 } from "lucide-react";
+import { Plus, Trash2, X } from "lucide-react";
 import { Label } from "../../../components/ui/label";
 import {
   Card,
@@ -33,9 +33,42 @@ const AddWallpaper = () => {
   const [description, setDescription] = useState("");
   const [category, setCategory] = useState("");
   const [files, setFiles] = useState([]);
+  const [tags, setTags] = useState([]);
+  const [tagInput, setTagInput] = useState("");
+  const [suggestedTags, setSuggestedTags] = useState([
+    "Nature",
+    "Abstract",
+    "Cityscape",
+    "Minimal",
+    "Vintage",
+    "Dark",
+    "Bright",
+  ]);
+
+  const handleAddTag = () => {
+    const newTag = tagInput.trim();
+    if (newTag && !tags.includes(newTag)) {
+      setTags([...tags, newTag]);
+      setTagInput("");
+      if (!suggestedTags.includes(newTag)) {
+        setSuggestedTags([...suggestedTags, newTag]); // Add new tag to suggestions
+      }
+    }
+  };
+
+  const handleRemoveTag = (tagToRemove) => {
+    setTags(tags.filter((tag) => tag !== tagToRemove));
+  };
+
+  const handleSelectSuggestedTag = (tag) => {
+    if (!tags.includes(tag)) {
+      setTags([...tags, tag]);
+    }
+    setTagInput("");
+  };
 
   const handleSubmit = async (e) => {
-    e.preventDefault(); // Prevent form refresh
+    e.preventDefault();
     if (files.length === 0 || !category) {
       alert("Please select at least one file and a category to upload.");
       return;
@@ -45,8 +78,8 @@ const AddWallpaper = () => {
     formData.append("title", title);
     formData.append("description", description);
     formData.append("category", category);
+    formData.append("tags", JSON.stringify(tags)); // Add tags to form data
 
-    // Append each selected file to form data
     files.forEach((file) => {
       formData.append("wallpaperImages", file);
     });
@@ -59,11 +92,11 @@ const AddWallpaper = () => {
       );
       console.log(response.data);
       alert("Wallpapers uploaded successfully!");
-      // Optionally clear form fields after upload
       setTitle("");
       setDescription("");
       setFiles([]);
       setCategory("");
+      setTags([]);
     } catch (error) {
       console.error(error);
       alert("Failed to upload wallpapers.");
@@ -73,7 +106,9 @@ const AddWallpaper = () => {
   return (
     <Dialog>
       <DialogTrigger>
-        <Button className="bg-blue-500 text-white"><Plus /> Add Wallpaper</Button>
+        <Button className="bg-blue-500 text-white">
+          <Plus /> Add Wallpaper
+        </Button>
       </DialogTrigger>
       <DialogContent className="bg-transparent border-none">
         <DialogHeader>
@@ -81,7 +116,9 @@ const AddWallpaper = () => {
           <DialogDescription>
             <Card className="w-[450px] bg-[#18181B] border-[216 34% 17%]">
               <CardHeader>
-                <CardTitle className="text-white font-normal">Add New Wallpaper</CardTitle>
+                <CardTitle className="text-white font-normal">
+                  Add New Wallpaper
+                </CardTitle>
               </CardHeader>
               <CardContent>
                 <form onSubmit={handleSubmit} className="text-white">
@@ -130,14 +167,72 @@ const AddWallpaper = () => {
                         </SelectTrigger>
                         <SelectContent className="max-w-sm bg-[#18181B] border-[216 34% 17%] focus-visible:ring-offset-0 text-white">
                           <SelectItem value="Phone">Phone</SelectItem>
-                          <SelectItem value="Desktop">Desktop</SelectItem>
-                          <SelectItem value="Tablet">Tablet</SelectItem>
+                          {/* <SelectItem value="Desktop">Desktop</SelectItem>
+                          <SelectItem value="Tablet">Tablet</SelectItem> */}
                         </SelectContent>
                       </Select>
                     </div>
+                    <div className="flex flex-col space-y-1.5">
+                      <Label>Tags</Label>
+                      <div className="relative flex items-center gap-2">
+                        <Input
+                          value={tagInput}
+                          onChange={(e) => setTagInput(e.target.value)}
+                          placeholder="Add a tag"
+                          className="bg-[#18181B] border-[216 34% 17%]"
+                          onKeyDown={(e) => e.key === "Enter" && handleAddTag()}
+                        />
+                        <Button
+                          type="button"
+                          onClick={handleAddTag}
+                          className="bg-blue-500 text-white"
+                        >
+                          Add
+                        </Button>
+                        {tagInput && (
+                          <div className="absolute top-full mt-1 w-full bg-[#18181B] border border-gray-600 rounded-md shadow-lg max-h-48 overflow-auto z-10">
+                            {suggestedTags
+                              .filter((tag) =>
+                                tag
+                                  .toLowerCase()
+                                  .includes(tagInput.toLowerCase())
+                              )
+                              .map((suggestedTag, index) => (
+                                <div
+                                  key={index}
+                                  onClick={() =>
+                                    handleSelectSuggestedTag(suggestedTag)
+                                  }
+                                  className="p-2 hover:bg-blue-500 hover:text-white cursor-pointer"
+                                >
+                                  {suggestedTag}
+                                </div>
+                              ))}
+                          </div>
+                        )}
+                      </div>
+                      <div className="flex flex-wrap gap-2 mt-2">
+                        {tags.map((tag, index) => (
+                          <div
+                            key={index}
+                            className="flex items-center bg-blue-500 text-white px-2 py-1 rounded"
+                          >
+                            <span>{tag}</span>
+                            <X
+                              className="ml-2 cursor-pointer"
+                              size={16}
+                              onClick={() => handleRemoveTag(tag)}
+                            />
+                          </div>
+                        ))}
+                      </div>
+                    </div>
                   </div>
                   <CardFooter className="flex justify-between w-full mt-5 p-0">
-                    <Button type="submit" className="w-full bg-blue-500 text-white">
+                    <Button
+                      type="submit"
+                      className="w-full bg-blue-500 text-white"
+                    >
                       Upload
                     </Button>
                   </CardFooter>
