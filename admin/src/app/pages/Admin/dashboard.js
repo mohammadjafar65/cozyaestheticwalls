@@ -24,7 +24,7 @@ import {
   TableHeader,
   TableRow,
 } from "../../../components/ui/table";
-import { Plus, Trash2 } from "lucide-react";
+import { Plus, Trash2, ArrowUpDown } from "lucide-react";
 import {
   DropdownMenu,
   DropdownMenuCheckboxItem,
@@ -105,9 +105,20 @@ const Dashboard = () => {
     },
     {
       accessorKey: "downloadCount",
-      header: "Downloads",
+      header: ({ column }) => {
+        return (
+          <Button
+            variant="ghost"
+            className="hover:bg-transparent hover:text-white"
+            onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+          >
+            Downloads
+            <ArrowUpDown />
+          </Button>
+        );
+      },
       cell: ({ row }) => (
-        <div>{row.original.downloadCount || 0}</div> // Display the download count
+        <div className="lowercase">{row.original.downloadCount || 0}</div>
       ),
     },
     {

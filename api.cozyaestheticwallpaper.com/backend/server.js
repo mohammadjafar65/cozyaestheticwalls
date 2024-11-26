@@ -5,6 +5,7 @@ const cors = require("cors");
 const mysql = require("mysql2");
 const sharp = require("sharp");
 const fs = require("fs");
+const jwt = require("jsonwebtoken");
 const app = express();
 require("dotenv").config();
 const port = process.env.PORT || 3000;
@@ -30,6 +31,33 @@ connection.connect((err) => {
 if (!fs.existsSync("./uploads")) {
   fs.mkdirSync("./uploads");
 }
+
+const SECRET_KEY = "yellow";
+const USERNAME = "Admin"; // Replace with your username
+const PASSWORD = "Zafar12@#"; // Replace with your password
+
+// Login endpoint
+app.post("/api/login", (req, res) => {
+  const { username, password } = req.body;
+  if (username === USERNAME && password === PASSWORD) {
+    const token = jwt.sign({ username }, SECRET_KEY, { expiresIn: "1h" });
+    res.json({ token });
+  } else {
+    res.status(401).json({ message: "Invalid credentials" });
+  }
+});
+
+// Verify token
+app.get("/api/verify-token", (req, res) => {
+  const authHeader = req.headers.authorization;
+  if (!authHeader) return res.sendStatus(401);
+  const token = authHeader.split(" ")[1];
+
+  jwt.verify(token, SECRET_KEY, (err, user) => {
+    if (err) return res.sendStatus(403);
+    res.json({ user });
+  });
+});
 
 // Middleware
 app.use(

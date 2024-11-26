@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Plus, Trash2, X } from "lucide-react";
+import { Plus, Trash2, X, CheckCircle } from "lucide-react";
 import { Label } from "../../../components/ui/label";
 import {
   Card,
@@ -27,6 +27,7 @@ import {
   DialogTrigger,
 } from "../../../components/ui/dialog";
 import axios from "axios";
+import { Spinner } from "../../../components/ui/spinner";
 
 const AddWallpaper = () => {
   const [title, setTitle] = useState("");
@@ -35,6 +36,8 @@ const AddWallpaper = () => {
   const [files, setFiles] = useState([]);
   const [tags, setTags] = useState([]);
   const [tagInput, setTagInput] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
+  const [isSuccess, setIsSuccess] = useState(false);
   const [suggestedTags, setSuggestedTags] = useState([
     "Nature",
     "Abstract",
@@ -49,7 +52,6 @@ const AddWallpaper = () => {
     "Winter",
     "Anime",
     "Cozy",
-    
   ]);
 
   const handleAddTag = () => {
@@ -91,6 +93,7 @@ const AddWallpaper = () => {
       formData.append("wallpaperImages", file);
     });
 
+    setIsLoading(true);
     try {
       const response = await axios.post(
         `${process.env.REACT_APP_API_URL}/api/wallpapers/upload-multiple`,
@@ -98,7 +101,8 @@ const AddWallpaper = () => {
         { headers: { "Content-Type": "multipart/form-data" } }
       );
       console.log(response.data);
-      alert("Wallpapers uploaded successfully!");
+      setIsLoading(false);
+      setIsSuccess(true);
       setTitle("");
       setDescription("");
       setFiles([]);
@@ -106,6 +110,7 @@ const AddWallpaper = () => {
       setTags([]);
     } catch (error) {
       console.error(error);
+      setIsLoading(false);
       alert("Failed to upload wallpapers.");
     }
   };
@@ -239,8 +244,9 @@ const AddWallpaper = () => {
                     <Button
                       type="submit"
                       className="w-full bg-blue-500 text-white"
+                      disabled={isLoading}
                     >
-                      Upload
+                      {isLoading ? <Spinner /> : "Upload"}
                     </Button>
                   </CardFooter>
                 </form>
@@ -249,6 +255,21 @@ const AddWallpaper = () => {
           </DialogDescription>
         </DialogHeader>
       </DialogContent>
+      {isSuccess && (
+        <DialogContent className="w-[300px] bg-[#18181B] border-[216 34% 17%] shadow-lg rounded-lg p-6">
+          <div className="flex flex-col items-center text-center">
+            <CheckCircle className="text-green-500 w-12 h-12 mb-4" />
+            <h3 className="text-lg font-medium">Upload Successful!</h3>
+            <p>Your wallpapers have been uploaded successfully.</p>
+            <Button
+              onClick={() => setIsSuccess(false)}
+              className="mt-4 bg-blue-500 text-white"
+            >
+              Close
+            </Button>
+          </div>
+        </DialogContent>
+      )}
     </Dialog>
   );
 };

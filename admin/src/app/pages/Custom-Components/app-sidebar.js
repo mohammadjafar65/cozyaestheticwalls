@@ -1,4 +1,5 @@
-import { Calendar, Home, Inbox, Search, Settings } from "lucide-react";
+import { useNavigate } from "react-router-dom";
+import { Calendar, Home, Inbox, Search, Settings, LogOut } from "lucide-react";
 
 import {
   Sidebar,
@@ -9,7 +10,9 @@ import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
-} from "../../..//components/ui/sidebar";
+  SidebarFooter,
+} from "../../../components/ui/sidebar";
+import { Button } from "../../../components/ui/button";
 
 // Menu items.
 const items = [
@@ -21,6 +24,13 @@ const items = [
 ];
 
 export function AppSidebar() {
+  const navigate = useNavigate();
+
+  const handleLogout = () => {
+    localStorage.removeItem("isAuthenticated");
+    navigate("/login");
+  };
+
   return (
     <Sidebar>
       <SidebarContent className="p-4">
@@ -44,6 +54,11 @@ export function AppSidebar() {
           </SidebarGroupContent>
         </SidebarGroup>
       </SidebarContent>
+      <SidebarFooter>
+        <Button onClick={handleLogout} className="flex items-center justify-start bg-transparent hover:bg-background">
+          <LogOut/> Logout
+        </Button>
+      </SidebarFooter>
     </Sidebar>
   );
 }
