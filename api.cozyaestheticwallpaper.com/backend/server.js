@@ -64,6 +64,7 @@ app.use(
   cors({
     origin: [
       process.env.ORIGIN,
+      process.env.ORIGINWWW,
       process.env.ORIGINTWO,
       // "https://cozyaestheticwallpaper.com",
       // "https://admin.cozyaestheticwallpaper.com",
