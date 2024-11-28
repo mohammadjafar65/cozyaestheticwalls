@@ -13,6 +13,7 @@ import {
 import {
   Sidebar,
   SidebarContent,
+  SidebarFooter,
   SidebarGroup,
   SidebarGroupContent,
   SidebarGroupLabel,
@@ -86,15 +87,7 @@ export function AppSidebar({
 
   return (
     <Sidebar>
-      <SidebarContent className="p-4">
-        <div className="flex flex-col items-center gap-5 border border-[216 34% 17%] py-4 rounded-[10px]">
-          <img
-            src="../logo.png"
-            className="w-9"
-            alt="Cozy Aesthetic Wallpaper"
-          />
-          <h1>Cozy Aesthetic Wallpaper</h1>
-        </div>
+      <SidebarContent className="p-4 pt-[30%]">
         {/* <SidebarGroup>
           <SidebarGroupLabel className="mb-1">Device</SidebarGroupLabel>
           <SidebarGroupContent>
@@ -134,7 +127,9 @@ export function AppSidebar({
                       selectedTag === tag ? "bg-blue-500 text-white" : ""
                     }
                   >
-                    <span>{tag} ({count})</span>
+                    <span>
+                      {tag} ({count})
+                    </span>
                   </SidebarMenuButton>
                 </SidebarMenuItem>
               ))}
@@ -142,6 +137,7 @@ export function AppSidebar({
           </SidebarGroupContent>
         </SidebarGroup>
       </SidebarContent>
+      <SidebarFooter className="pl-7 pb-7"><p className="text-[13px] text-gray-500">&copy; {new Date().getFullYear()} &nbsp;|&nbsp; All rights reserved</p></SidebarFooter>
     </Sidebar>
   );
 }

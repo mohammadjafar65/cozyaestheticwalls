@@ -66,8 +66,6 @@ app.use(
       process.env.ORIGIN,
       process.env.ORIGINWWW,
       process.env.ORIGINTWO,
-      // "https://cozyaestheticwallpaper.com",
-      // "https://admin.cozyaestheticwallpaper.com",
     ],
     methods: ["GET", "POST", "PUT", "DELETE"],
     allowedHeaders: ["Content-Type", "Authorization"],

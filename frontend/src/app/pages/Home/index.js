@@ -59,43 +59,52 @@ const HomePage = () => {
         filteredWallpapers={filteredWallpapers}
         setFilteredWallpapers={setFilteredWallpapers}
       >
-        <div className="py-6 px-2">
-          <div className="grid gap-y-4 grid-cols-2 sm:grid-cols-3 min-[1024px]:grid-cols-3 min-[1380px]:grid-cols-6 min-[2560px]:grid-cols-8 justify-items-center">
+        <div className="py-6 px-5 w-full">
+          <div className="grid gap-y-6 grid-cols-2 sm:grid-cols-3 min-[1024px]:grid-cols-4 min-[1380px]:grid-cols-6 min-[2560px]:grid-cols-7 justify-items-center">
             {filteredWallpapers.map((wallpaper) => (
               <div
                 onClick={() => handleWallpaperClick(wallpaper)} // Open drawer with selected wallpaper data
-                className="group relative overflow-hidden rounded-lg cursor-pointer shadow-md hover:shadow-lg transition-shadow duration-300"
+                className="group relative cursor-pointer"
                 key={wallpaper._id || wallpaper.id}
               >
-                <div className="flex items-center justify-center relative">
+                <div className="relative w-full aspect-[9/16] flex items-center justify-center overflow-hidden">
+                  {/* iPhone Frame */}
                   <img
                     src="iPhone_Frame.png"
                     alt="iPhone Frame"
-                    className="h-[500px] max-[425px]:h-[400px] max-[375px]:h-[350px]"
+                    className="w-full h-full object-contain"
                   />
-                  <img
-                    src="time_iPhone.png"
-                    alt="Dinamy Island"
-                    className="absolute w-[95%] z-10 top-5"
-                  />
-                  <img
-                    src="Bottom.png"
-                    alt="Dinamy Island"
-                    className="absolute w-[95%] z-10 bottom-5"
-                  />
+
+                  {/* Wallpaper */}
                   <img
                     src={`${process.env.REACT_APP_API_URL}${wallpaper.thumbnailUrl}`}
                     alt={wallpaper.title}
-                    className="object-cover w-[90%] h-[96.2%] rounded-[26px] absolute top-2.5 max-[375px]:rounded-[18px] max-[375px]:top-2 max-[375px]:h-[96%] max-[425px]:top-2 max-[425px]:rounded-[22px]"
+                    className="absolute inset-0 left-[10.6%] top-[2%] w-[78.6%] h-[96%] rounded-[25px] z-10 object-cover"
+                  />
+
+                  {/* Top Dynamic Island */}
+                  <img
+                    src="time_iPhone.png"
+                    alt="Dynamic Island"
+                    className="absolute top-[3%] w-[80%] z-10 object-contain"
+                  />
+
+                  {/* Bottom Section */}
+                  <img
+                    src="Bottom.png"
+                    alt="Bottom Controls"
+                    className="absolute bottom-[5%] w-[80%] z-10 object-contain"
                   />
                 </div>
-                <div className="absolute top-0 z-10">
-                  {wallpaper.isNew === 1 && (
-                    <span className="new-tag bg-red-500 text-white px-2 py-1 rounded">
+
+                {/* "New" Tag */}
+                {wallpaper.isNew === 1 && (
+                  <div className="absolute top-2 left-2 z-40">
+                    <span className="bg-red-500 text-white px-2 py-1 rounded text-xs">
                       New
                     </span>
-                  )}
-                </div>
+                  </div>
+                )}
               </div>
             ))}
           </div>

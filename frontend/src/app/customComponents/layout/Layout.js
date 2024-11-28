@@ -17,14 +17,16 @@ export default function Layout({
   const [activeTag, setActiveTag] = useState("All Wallpapers");
   return (
     <SidebarProvider>
-      <AppSidebar
-        wallpapers={wallpapers}
-        setFilteredWallpapers={setFilteredWallpapers}
-        setActiveTag={setActiveTag}
-      />
       <main className="w-full">
         <TopBar activeTag={activeTag} />
-        {children}
+        <div className="flex w-full items-start justify-center">
+          <AppSidebar
+            wallpapers={wallpapers}
+            setFilteredWallpapers={setFilteredWallpapers}
+            setActiveTag={setActiveTag}
+          />
+          {children}
+        </div>
       </main>
     </SidebarProvider>
   );

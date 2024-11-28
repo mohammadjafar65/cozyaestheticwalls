@@ -68,26 +68,33 @@ const WallpaperDetails = ({ isOpen, onClose, wallpaper }) => {
               <p className="w-full text-center text-[#FFF100] mb-2">
                 {downloadCount} Downloads ✨
               </p>
-              <div className="flex items-center w-full justify-center relative">
+              <div className="relative w-full aspect-[6/9] flex items-center justify-center overflow-hidden">
+                {/* iPhone Frame */}
                 <img
                   src="iPhone_Frame.png"
                   alt="iPhone Frame"
-                  className="h-[550px]"
+                  className="w-full h-full object-contain"
                 />
-                <img
-                  src="time_iPhone.png"
-                  alt="Dinamy Island"
-                  className="absolute w-[85%] z-10 top-4 left-5"
-                />
-                <img
-                  src="Bottom.png"
-                  alt="Dinamy Island"
-                  className="absolute w-[85%] z-10 bottom-4 left-6"
-                />
+
+                {/* Wallpaper */}
                 <img
                   src={`${process.env.REACT_APP_API_URL}${wallpaper.thumbnailUrl}`}
                   alt={wallpaper.title}
-                  className="object-cover w-[244px] h-[525px] rounded-[31px] transition-transform duration-500 ease-in-out transform group-hover:scale-105 absolute"
+                  className="absolute inset-0 left-[17%] top-[2%] w-[65.5%] h-[95.8%] rounded-[25px] z-10 object-cover"
+                />
+
+                {/* Top Dynamic Island */}
+                <img
+                  src="time_iPhone.png"
+                  alt="Dynamic Island"
+                  className="absolute top-[3%] w-[67%] z-10 object-contain"
+                />
+
+                {/* Bottom Section */}
+                <img
+                  src="Bottom.png"
+                  alt="Bottom Controls"
+                  className="absolute bottom-[5%] w-[67%] z-10 object-contain"
                 />
               </div>
               <a
