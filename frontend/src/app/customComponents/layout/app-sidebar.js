@@ -5,6 +5,7 @@ import {
   Tablet,
   Home,
   Smartphone,
+  Newspaper,
   Inbox,
   Search,
   Settings,
@@ -87,7 +88,7 @@ export function AppSidebar({
 
   return (
     <Sidebar>
-      <SidebarContent className="p-4 pt-[30%]">
+      <SidebarContent className="p-4 pt-[30%] max-sm:pt-4">
         {/* <SidebarGroup>
           <SidebarGroupLabel className="mb-1">Device</SidebarGroupLabel>
           <SidebarGroupContent>
@@ -113,7 +114,7 @@ export function AppSidebar({
               <SidebarMenuItem>
                 <SidebarMenuButton
                   onClick={handleShowAllClick}
-                  className={!selectedTag ? "bg-blue-500 text-white" : ""}
+                  className={!selectedTag ? "bg-blue-500 text-white transaction all duration-300" : ""}
                 >
                   <span>All Wallpapers ({wallpapers.length})</span>
                 </SidebarMenuButton>
@@ -124,7 +125,7 @@ export function AppSidebar({
                   <SidebarMenuButton
                     onClick={() => handleTagClick(tag)}
                     className={
-                      selectedTag === tag ? "bg-blue-500 text-white" : ""
+                      selectedTag === tag ? "bg-blue-500 text-white transaction all duration-300" : ""
                     }
                   >
                     <span>
@@ -137,7 +138,14 @@ export function AppSidebar({
           </SidebarGroupContent>
         </SidebarGroup>
       </SidebarContent>
-      <SidebarFooter className="pl-7 pb-7"><p className="text-[13px] text-gray-500">&copy; {new Date().getFullYear()} &nbsp;|&nbsp; All rights reserved</p></SidebarFooter>
+      <SidebarFooter className="pl-7 pb-7">
+        {/* <a href="/articles" className="text-gray-500 hover:text-white m-0 p-0 flex gap-2 items-center mb-2 transaction all duration-300">
+          <Newspaper className="w-4 h-4" /> Useful Articles
+        </a> */}
+        <p className="text-[13px] text-gray-500 border-t pt-3">
+          &copy; {new Date().getFullYear()} &nbsp;|&nbsp; All rights reserved
+        </p>
+      </SidebarFooter>
     </Sidebar>
   );
 }

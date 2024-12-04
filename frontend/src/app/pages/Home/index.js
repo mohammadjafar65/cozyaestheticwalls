@@ -59,8 +59,8 @@ const HomePage = () => {
         filteredWallpapers={filteredWallpapers}
         setFilteredWallpapers={setFilteredWallpapers}
       >
-        <div className="py-6 px-5 w-full">
-          <div className="grid gap-y-6 grid-cols-2 sm:grid-cols-3 min-[1024px]:grid-cols-4 min-[1380px]:grid-cols-6 min-[2560px]:grid-cols-7 justify-items-center">
+        <div className="py-6 px-5 w-full max-sm:px-2 max-sm:py-4">
+          <div className="grid gap-y-6 max-sm:gap-y-4 grid-cols-2 sm:grid-cols-3 min-[1024px]:grid-cols-4 min-[1380px]:grid-cols-6 min-[2560px]:grid-cols-7 justify-items-center">
             {filteredWallpapers.map((wallpaper) => (
               <div
                 onClick={() => handleWallpaperClick(wallpaper)} // Open drawer with selected wallpaper data
@@ -79,7 +79,7 @@ const HomePage = () => {
                   <img
                     src={`${process.env.REACT_APP_API_URL}${wallpaper.thumbnailUrl}`}
                     alt={wallpaper.title}
-                    className="absolute inset-0 left-[10.6%] top-[2%] w-[78.6%] h-[96%] rounded-[25px] z-10 object-cover"
+                    className="absolute inset-0 left-[10.6%] top-[2%] w-[78.6%] h-[96%] rounded-[25px] max-sm:rounded-[20px] z-10 object-cover"
                   />
 
                   {/* Top Dynamic Island */}
@@ -99,7 +99,7 @@ const HomePage = () => {
 
                 {/* "New" Tag */}
                 {wallpaper.isNew === 1 && (
-                  <div className="absolute top-2 left-2 z-40">
+                  <div className="absolute top-2 left-2 z-10">
                     <span className="bg-red-500 text-white px-2 py-1 rounded text-xs">
                       New
                     </span>
