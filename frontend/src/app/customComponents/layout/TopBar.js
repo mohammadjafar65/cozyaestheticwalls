@@ -24,6 +24,17 @@ const TopBar = ({ activeTag }) => {
             {activeTag && `${activeTag}`}
           </h3>
         </div>
+        <a
+          href="https://www.producthunt.com/posts/cozy-aesthetic-wallpapers?embed=true&utm_source=badge-featured&utm_medium=badge&utm_souce=badge-cozy&#0045;aesthetic&#0045;wallpapers"
+          target="_blank"
+        >
+          <img
+            src="https://api.producthunt.com/widgets/embed-image/v1/featured.svg?post_id=698997&theme=neutral"
+            alt="Cozy&#0032;Aesthetic&#0032;Wallpapers - Unleash&#0032;the&#0032;power&#0032;of&#0032;elegance&#0032;&#0038;&#0032;serenity&#0032;for&#0032;your&#0032;screen | Product Hunt"
+            width="200"
+            height="54"
+          />
+        </a>
       </div>
     </>
   );

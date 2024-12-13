@@ -85,49 +85,61 @@ const WallpaperDetails = ({ isOpen, onClose, wallpaper }) => {
 
                 {/* Top Dynamic Island */}
                 <img
+                  src="StatusBar.svg"
+                  alt="Dynamic Island"
+                  className="absolute top-[3%] w-[67%] left-[15%] z-10 object-contain"
+                />
+                <img
+                  src="Date_Widget.svg"
+                  alt="Dynamic Island"
+                  className="absolute top-[13%] w-[67%] left-[16%] z-10 object-contain"
+                />
+                {/* <img
                   src="time_iPhone.png"
                   alt="Dynamic Island"
                   className="absolute top-[3%] w-[67%] z-10 object-contain"
-                />
+                /> */}
 
                 {/* Bottom Section */}
                 <img
-                  src="Bottom.png"
+                  src="Bottom.svg"
                   alt="Bottom Controls"
                   className="absolute bottom-[5%] w-[67%] z-10 object-contain"
                 />
               </div>
-              <a
-                className="bg-white rounded-full text-[18px] text-black hover:text-white bg-[#f39f5a] flex items-center justify-center gap-2 text-black px-5 py-4 mt-[20px] transition-transform duration-500 ease-in-out transform group-hover:scale-110 hover:bg-[#f39f5a]/[90%]"
-                href={`${
-                  process.env.REACT_APP_API_URL
-                }/api/wallpapers/download/${wallpaper.url.split("/").pop()}`} // Get the filename from wallpaper URL
-                download // Just adding this as a safeguard to force the download
-                onClick={handleDownload}
-              >
-                <Download className="w-5 h-5" /> Download Free
-              </a>
+              <div className="w-full flex flex-col items-center justify-center">
+                <a
+                  className="bg-white rounded-full text-[17px] text-black hover:text-white bg-[#f39f5a] flex items-center justify-center gap-2 text-black py-3 mt-[20px] transition-transform duration-500 ease-in-out transform group-hover:scale-110 hover:bg-[#f39f5a]/[90%] w-[70%] "
+                  href={`${
+                    process.env.REACT_APP_API_URL
+                  }/api/wallpapers/download/${wallpaper.url.split("/").pop()}`} // Get the filename from wallpaper URL
+                  download // Just adding this as a safeguard to force the download
+                  onClick={handleDownload}
+                >
+                  <Download className="w-5 h-5" /> Download Free
+                </a>
+                {/* Tags Section */}
+                <div>
+                  {wallpaper.tags && wallpaper.tags.length > 0 && (
+                    <div className="mt-4 flex flex-wrap gap-2">
+                      {wallpaper.tags.map((tag, index) => (
+                        <span
+                          key={index}
+                          className="bg-gray-200 text-gray-700 text-sm font-semibold px-3 py-1 rounded-full"
+                        >
+                          #{tag}
+                        </span>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              </div>
               {/* <img
                 src={`${process.env.REACT_APP_API_URL}${wallpaper.url}`}
                 alt={wallpaper.title}
                 className="object-cover w-[290px] h-[644px] rounded-[10px] transition-transform duration-500 ease-in-out transform group-hover:scale-105"
               /> */}
               {/* {wallpaper.description} */}
-              {/* Tags Section */}
-              <div>
-                {wallpaper.tags && wallpaper.tags.length > 0 && (
-                  <div className="mt-4 flex flex-wrap gap-2">
-                    {wallpaper.tags.map((tag, index) => (
-                      <span
-                        key={index}
-                        className="bg-gray-200 text-gray-700 text-sm font-semibold px-3 py-1 rounded-full"
-                      >
-                        #{tag}
-                      </span>
-                    ))}
-                  </div>
-                )}
-              </div>
             </DialogDescription>
           </DialogHeader>
         </DialogContent>

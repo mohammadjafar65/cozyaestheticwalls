@@ -1,5 +1,13 @@
 import { useNavigate } from "react-router-dom";
-import { Calendar, Home, Inbox, Search, Settings, LogOut } from "lucide-react";
+import {
+  Calendar,
+  Home,
+  Inbox,
+  Search,
+  Settings,
+  LogOut,
+  Newspaper,
+} from "lucide-react";
 
 import {
   Sidebar,
@@ -55,8 +63,11 @@ export function AppSidebar() {
         </SidebarGroup>
       </SidebarContent>
       <SidebarFooter>
-        <Button onClick={handleLogout} className="flex items-center justify-start bg-transparent hover:bg-background">
-          <LogOut/> Logout
+        <Button
+          onClick={handleLogout}
+          className="flex items-center justify-start bg-transparent hover:bg-background"
+        >
+          <LogOut /> Logout
         </Button>
       </SidebarFooter>
     </Sidebar>

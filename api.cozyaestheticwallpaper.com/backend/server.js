@@ -18,13 +18,12 @@ const connection = mysql.createConnection({
   database: process.env.DB_NAME,
 });
 
-// Connect to MySQL
 connection.connect((err) => {
   if (err) {
-    console.error("Error connecting to MySQL:", err);
-    process.exit(1); // Exit if connection fails
+    console.error("Error connecting to the database:", err.stack);
+    return;
   }
-  console.log("Connected to MySQL");
+  console.log("Connected to the database");
 });
 
 // Ensure uploads directory exists
@@ -62,17 +61,14 @@ app.get("/api/verify-token", (req, res) => {
 // Middleware
 app.use(
   cors({
-    origin: [
-      process.env.ORIGIN,
-      process.env.ORIGINWWW,
-      process.env.ORIGINTWO,
-    ],
+    origin: [process.env.ORIGIN, process.env.ORIGINWWW, process.env.ORIGINTWO],
     methods: ["GET", "POST", "PUT", "DELETE"],
     allowedHeaders: ["Content-Type", "Authorization"],
     credentials: true,
   })
 );
-app.use("/uploads", express.static("uploads"));
+app.use("/uploads", express.static(path.join(__dirname, "uploads")));
+// app.use("/uploads", express.static("uploads"));
 app.use(express.json()); // For parsing application/json
 
 // Multer storage configuration
@@ -88,7 +84,6 @@ const storage = multer.diskStorage({
 
 const upload = multer({ storage: storage });
 
-// Upload wallpaper with category and store metadata in MySQL
 // Upload wallpaper with category, tags, and store metadata in MySQL
 app.post(
   "/api/wallpapers/upload-multiple",
@@ -196,28 +191,6 @@ app.post(
     }
   }
 );
-
-// app.post(
-//   "/api/wallpapers/upload",
-//   upload.single("wallpaperImage"),
-//   (req, res) => {
-//     const { title, description } = req.body;
-//     const imageUrl = `/uploads/${req.file.filename}`;
-
-//     const query =
-//       "INSERT INTO wallpapers (title, url, description) VALUES (?, ?, ?)";
-//     connection.query(query, [title, imageUrl, description], (err, result) => {
-//       if (err) {
-//         console.error("Error inserting wallpaper into MySQL:", err);
-//         return res.status(500).json({ error: "Failed to upload wallpaper" });
-//       }
-//       res.json({
-//         message: "Wallpaper uploaded successfully",
-//         id: result.insertId,
-//       });
-//     });
-//   }
-// );
 
 app.get("/api/tags", async (req, res) => {
   try {

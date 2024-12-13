@@ -2,8 +2,7 @@ import React, { useEffect, useState } from "react";
 import Layout from "../../customComponents/layout/Layout";
 import WallpaperDetails from "../wallpaperDetails";
 import { Button } from "../../../components/ui/button";
-import axios from "axios"; // Import axios for API requests
-import TopBar from "../../customComponents/layout/TopBar";
+import axios from "axios";
 
 const HomePage = () => {
   const [wallpapers, setWallpapers] = useState([]); // All wallpapers
@@ -16,9 +15,7 @@ const HomePage = () => {
   useEffect(() => {
     const fetchWallpapers = async () => {
       try {
-        const response = await axios.get(
-          `${process.env.REACT_APP_API_URL}/api/wallpapers`
-        );
+        const response = await axios.get(`${process.env.REACT_APP_API_URL}/api/wallpapers`);
         const data = response.data;
 
         // Sort wallpapers by createdAt in descending order in the frontend as a backup
@@ -79,19 +76,25 @@ const HomePage = () => {
                   <img
                     src={`${process.env.REACT_APP_API_URL}${wallpaper.thumbnailUrl}`}
                     alt={wallpaper.title}
+                    loading="lazy"
                     className="absolute inset-0 left-[10.6%] top-[2%] w-[78.6%] h-[96%] rounded-[25px] max-sm:rounded-[20px] z-10 object-cover"
                   />
 
                   {/* Top Dynamic Island */}
                   <img
-                    src="time_iPhone.png"
+                    src="StatusBar.svg"
                     alt="Dynamic Island"
                     className="absolute top-[3%] w-[80%] z-10 object-contain"
+                  />
+                  <img
+                    src="Date_Widget.svg"
+                    alt="Dynamic Island"
+                    className="absolute top-[13%] w-[80%] z-10 object-contain"
                   />
 
                   {/* Bottom Section */}
                   <img
-                    src="Bottom.png"
+                    src="Bottom.svg"
                     alt="Bottom Controls"
                     className="absolute bottom-[5%] w-[80%] z-10 object-contain"
                   />

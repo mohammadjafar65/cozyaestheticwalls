@@ -30,16 +30,6 @@ const items = [
     url: "/",
     icon: Smartphone,
   },
-  // {
-  //   title: "Desktop",
-  //   url: "/desktop",
-  //   icon: Monitor,
-  // },
-  // {
-  //   title: "Tablet",
-  //   url: "/tablet",
-  //   icon: Tablet,
-  // },
 ];
 
 export function AppSidebar({
@@ -114,7 +104,11 @@ export function AppSidebar({
               <SidebarMenuItem>
                 <SidebarMenuButton
                   onClick={handleShowAllClick}
-                  className={!selectedTag ? "bg-blue-500 text-white transaction all duration-300" : ""}
+                  className={
+                    !selectedTag
+                      ? "bg-blue-500 text-white transaction all duration-300"
+                      : ""
+                  }
                 >
                   <span>All Wallpapers ({wallpapers.length})</span>
                 </SidebarMenuButton>
@@ -125,7 +119,9 @@ export function AppSidebar({
                   <SidebarMenuButton
                     onClick={() => handleTagClick(tag)}
                     className={
-                      selectedTag === tag ? "bg-blue-500 text-white transaction all duration-300" : ""
+                      selectedTag === tag
+                        ? "bg-blue-500 text-white transaction all duration-300"
+                        : ""
                     }
                   >
                     <span>
@@ -139,9 +135,21 @@ export function AppSidebar({
         </SidebarGroup>
       </SidebarContent>
       <SidebarFooter className="pl-7 pb-7">
-        {/* <a href="/articles" className="text-gray-500 hover:text-white m-0 p-0 flex gap-2 items-center mb-2 transaction all duration-300">
-          <Newspaper className="w-4 h-4" /> Useful Articles
-        </a> */}
+        <a
+          href="https://blog.cozyaestheticwallpaper.com/"
+          target="_"
+          className="text-gray-500 hover:text-white m-0 p-0 flex gap-2 items-center mb-2 transaction all duration-300"
+        >
+          <Newspaper className="w-4 h-4" /> Articles
+        </a>
+        <div className="border-t pt-3 pb-1 flex items-center">
+          <p className="text-[13px] text-gray-500 hover:text-white transaction all duration-300">
+            <a href="/PrivacyPolicy">Privacy Policy</a>
+          </p>
+          <p className="text-[13px] text-gray-500 border-l pl-2 ml-2 hover:text-white transaction all duration-300">
+            <a href="/TermsandConditions">Terms and Conditions</a>
+          </p>
+        </div>
         <p className="text-[13px] text-gray-500 border-t pt-3">
           &copy; {new Date().getFullYear()} &nbsp;|&nbsp; All rights reserved
         </p>

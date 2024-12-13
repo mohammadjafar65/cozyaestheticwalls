@@ -221,7 +221,9 @@ const Dashboard = () => {
           <div className="flex items-center gap-5">
             <SidebarTrigger className="" />
           </div>
-          <AddWallpaper />
+          <div className="flex gap-5">
+            <AddWallpaper />
+          </div>
         </div>
         <div className="w-full">
           <div className="flex items-center justify-between py-4 w-full">
