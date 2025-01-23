@@ -9,6 +9,7 @@ import {
   DrawerTitle,
   DrawerTrigger,
 } from "../../components/ui/drawer";
+import { toast } from "react-hot-toast";
 import {
   Dialog,
   DialogContent,
@@ -44,15 +45,22 @@ const WallpaperDetails = ({ isOpen, onClose, wallpaper }) => {
 
   const handleDownload = async () => {
     try {
+      // Increment the download count on the server
       await fetch(
         `${process.env.REACT_APP_API_URL}/api/wallpapers/download/${wallpaper.id}/increment`,
         {
           method: "POST",
         }
       );
-      setDownloadCount((prev) => prev + 1); // Optimistically update the count
+
+      // Optimistically update the count locally
+      setDownloadCount((prev) => prev + 1);
+
+      // Show a success toast
+      toast.success("Thank you for downloading wallpaper!");
     } catch (error) {
       console.error("Error incrementing download count:", error);
+      toast.error("An error occurred while starting the download.");
     }
   };
 

@@ -26,7 +26,7 @@ const TopBar = ({ activeTag }) => {
         </div>
         <a
           href="https://www.producthunt.com/posts/cozy-aesthetic-wallpapers?embed=true&utm_source=badge-featured&utm_medium=badge&utm_souce=badge-cozy&#0045;aesthetic&#0045;wallpapers"
-          target="_blank"
+          target="_blank" className="hidden md:block"
         >
           <img
             src="https://api.producthunt.com/widgets/embed-image/v1/featured.svg?post_id=698997&theme=neutral"

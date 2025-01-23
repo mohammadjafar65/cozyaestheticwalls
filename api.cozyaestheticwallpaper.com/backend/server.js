@@ -6,11 +6,12 @@ const mysql = require("mysql2");
 const sharp = require("sharp");
 const fs = require("fs");
 const jwt = require("jsonwebtoken");
-const app = express();
 require("dotenv").config();
+
+const app = express();
 const port = process.env.PORT || 3000;
 
-// Create a connection to the MySQL database
+// Database Connection
 const connection = mysql.createConnection({
   host: process.env.DB_HOST,
   user: process.env.DB_USER,
@@ -20,43 +21,22 @@ const connection = mysql.createConnection({
 
 connection.connect((err) => {
   if (err) {
-    console.error("Error connecting to the database:", err.stack);
+    console.error("Database connection failed:", err.message);
     return;
   }
   console.log("Connected to the database");
 });
 
 // Ensure uploads directory exists
-if (!fs.existsSync("./uploads")) {
-  fs.mkdirSync("./uploads");
+const uploadDir = path.join(__dirname, "../../frontend/public/uploads");
+if (!fs.existsSync(uploadDir)) {
+  fs.mkdirSync(uploadDir, { recursive: true });
 }
 
+// Secret Key and Admin Credentials
 const SECRET_KEY = "yellow";
-const USERNAME = "Admin"; // Replace with your username
-const PASSWORD = "Zafar12@#"; // Replace with your password
-
-// Login endpoint
-app.post("/api/login", (req, res) => {
-  const { username, password } = req.body;
-  if (username === USERNAME && password === PASSWORD) {
-    const token = jwt.sign({ username }, SECRET_KEY, { expiresIn: "1h" });
-    res.json({ token });
-  } else {
-    res.status(401).json({ message: "Invalid credentials" });
-  }
-});
-
-// Verify token
-app.get("/api/verify-token", (req, res) => {
-  const authHeader = req.headers.authorization;
-  if (!authHeader) return res.sendStatus(401);
-  const token = authHeader.split(" ")[1];
-
-  jwt.verify(token, SECRET_KEY, (err, user) => {
-    if (err) return res.sendStatus(403);
-    res.json({ user });
-  });
-});
+const USERNAME = "Admin";
+const PASSWORD = "Zafar12@#";
 
 // Middleware
 app.use(
@@ -67,22 +47,44 @@ app.use(
     credentials: true,
   })
 );
-app.use("/uploads", express.static(path.join(__dirname, "uploads")));
-// app.use("/uploads", express.static("uploads"));
-app.use(express.json()); // For parsing application/json
+app.use("/uploads", express.static("uploads"));
+app.use(express.json()); // Parse JSON requests
 
-// Multer storage configuration
+// Login Endpoint
+app.post("/api/login", (req, res) => {
+  const { username, password } = req.body;
+  if (username === USERNAME && password === PASSWORD) {
+    const token = jwt.sign({ username }, SECRET_KEY, { expiresIn: "1h" });
+    res.json({ token });
+  } else {
+    res.status(401).json({ message: "Invalid credentials" });
+  }
+});
+
+// Verify Token
+app.get("/api/verify-token", (req, res) => {
+  const authHeader = req.headers.authorization;
+  if (!authHeader || !authHeader.startsWith("Bearer ")) {
+    return res.status(401).json({ message: "Unauthorized" });
+  }
+  const token = authHeader.split(" ")[1];
+  jwt.verify(token, SECRET_KEY, (err, user) => {
+    if (err) return res.status(403).json({ message: "Forbidden" });
+    res.json({ user });
+  });
+});
+
+// Multer Storage
 const storage = multer.diskStorage({
-  destination: "../../frontend/public/uploads",
+  destination: uploadDir,
   filename: (req, file, cb) => {
     cb(
       null,
-      file.fieldname + "-" + Date.now() + path.extname(file.originalname)
+      `${file.fieldname}-${Date.now()}${path.extname(file.originalname)}`
     );
   },
 });
-
-const upload = multer({ storage: storage });
+const upload = multer({ storage });
 
 // Upload wallpaper with category, tags, and store metadata in MySQL
 app.post(
@@ -359,13 +361,13 @@ app.post("/api/wallpapers/download/:id/increment", async (req, res) => {
   }
 });
 
-// Middleware to handle errors globally
+// Global Error Handler
 app.use((err, req, res, next) => {
-  console.error(err.stack);
+  console.error("Unhandled Error:", err.stack);
   res.status(500).send("Something went wrong!");
 });
 
-// Start the server
+// Start Server
 app.listen(port, () => {
   console.log(`Server running on port ${port}`);
 });
